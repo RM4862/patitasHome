@@ -1,0 +1,119 @@
+<div class="feed-container">
+  <!-- Barra de Navegación Superior -->
+  <div class="barra-superior">
+    <div class="nav-izquierda">
+      <button class="boton-feed activo">
+        <i class="fas fa-home"></i> Feed
+      </button>
+    </div>
+    <div class="nav-centro">
+      <div class="contenedor-busqueda">
+        <input type="text" placeholder="Buscar mascotas..." (input)="buscar($event)">
+        <button class="boton-buscar">
+          <i class="fas fa-search"></i>
+        </button>
+      </div>
+    </div>
+    <div class="nav-derecha">
+      <button class="boton-notificaciones" (click)="irANotificaciones()">
+        <i class="fas fa-bell"></i>
+      </button>
+      <button class="boton-perfil" (click)="irAlPerfil()">
+        <i class="fas fa-user"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Área de Contenido Principal -->
+  <div class="contenido-principal">
+    <!-- Barra Lateral Izquierda -->
+    <div class="barra-lateral barra-izquierda">
+      <div class="contenido-lateral">
+        <h3>Acciones Rápidas</h3>
+        <div class="botones-accion">
+          <button class="boton-accion boton-perdida" (click)="publicarMascotaPerdida()">
+            <i class="fas fa-search"></i>
+            Publicar Mascota Perdida
+          </button>
+          <button class="boton-accion boton-encontrada" (click)="publicarMascotaEncontrada()">
+            <i class="fas fa-paw"></i>
+            Publicar Mascota Encontrada
+          </button>
+          <button class="boton-accion boton-adopcion" (click)="publicarEnAdopcion()">
+            <i class="fas fa-heart"></i>
+            Publicar en Adopción
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feed Central -->
+    <div class="feed">
+      <div class="feed-encabezado">
+        <h2>Feed de Mascotas</h2>
+      </div>
+
+      <div class="tarjetas-mascotas">
+        <div class="tarjeta-mascota" *ngFor="let mascota of mascotas">
+          <div class="etiqueta-estado" [ngClass]="mascota.estado">
+            {{ mascota.estado | titlecase }}
+          </div>
+          <div class="imagen-mascota">
+            <img [src]="mascota.imagenUrl" [alt]="mascota.nombre">
+          </div>
+          <div class="info-mascota">
+            <h3>{{ mascota.nombre }}</h3>
+            <p>{{ mascota.descripcion }}</p>
+            <div class="acciones-tarjeta">
+              <button class="boton-detalles" (click)="verDetallesMascota(mascota)">Ver Detalles</button>
+              <button class="boton-contacto">Contactar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Barra Lateral Derecha -->
+    <div class="barra-lateral barra-derecha">
+      <div class="contenido-lateral">
+        <h3>Actividad Reciente</h3>
+        <div class="lista-actividades">
+          <div class="item-actividad">
+            <div class="icono-actividad encontrada">
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="detalles-actividad">
+              <p><strong>Milo</strong> fue encontrado!</p>
+              <span class="tiempo-actividad">hace 1 hora</span>
+            </div>
+          </div>
+          <div class="item-actividad">
+            <div class="icono-actividad adopcion">
+              <i class="fas fa-home"></i>
+            </div>
+            <div class="detalles-actividad">
+              <p><strong>Luna</strong> fue adoptada!</p>
+              <span class="tiempo-actividad">hace 3 horas</span>
+            </div>
+          </div>
+          <div class="item-actividad">
+            <div class="icono-actividad perdida">
+              <i class="fas fa-exclamation-circle"></i>
+            </div>
+            <div class="detalles-actividad">
+              <p><strong>Charlie</strong> fue reportado como perdido</p>
+              <span class="tiempo-actividad">hace 5 horas</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de detalles (aparece cuando modalVisible es true) -->
+  <app-modal-mascota
+    *ngIf="modalVisible"
+    [mascota]="mascotaSeleccionada"
+    (cerrar)="cerrarModal()">
+  </app-modal-mascota>
+</div>

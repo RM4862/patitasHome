@@ -1,0 +1,50 @@
+<div class="modal-backdrop" (click)="onBackdropClick($event)">
+  <div class="modal-contenido" *ngIf="mascota">
+    <div class="modal-cabecera">
+      <h2>{{ mascota.nombre }}</h2>
+      <div class="modal-estado" [ngClass]="mascota.estado">
+        {{ mascota.estado | titlecase }}
+      </div>
+      <button class="boton-cerrar" (click)="cerrarModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <div class="modal-cuerpo">
+      <div class="imagen-mascota-detalle">
+        <img [src]="mascota.imagenUrl" [alt]="mascota.nombre">
+      </div>
+
+      <div class="detalles-mascota">
+        <div class="detalle-item">
+          <span class="etiqueta">Nombre:</span>
+          <span class="valor">{{ mascota.nombre }}</span>
+        </div>
+
+        <div class="detalle-item">
+          <span class="etiqueta">Estado:</span>
+          <span class="valor estado-valor" [ngClass]="mascota.estado">
+            {{ mascota.estado | titlecase }}
+          </span>
+        </div>
+
+        <div class="detalle-item">
+          <span class="etiqueta">Descripción:</span>
+          <span class="valor">{{ mascota.descripcion }}</span>
+        </div>
+
+        <!-- Aquí puedes agregar más detalles según lo que tenga el modelo Mascota -->
+      </div>
+    </div>
+
+    <div class="modal-pie">
+      <button class="boton-contactar">
+        <i class="fas fa-envelope"></i> Contactar al dueño
+      </button>
+      <button class="boton-compartir">
+        <i class="fas fa-share-alt"></i> Compartir
+      </button>
+      <button class="boton-cerrar-pie" (click)="cerrarModal()">Cerrar</button>
+    </div>
+  </div>
+</div>

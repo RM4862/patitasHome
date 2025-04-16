@@ -1,0 +1,230 @@
+// Variables de color (igual que en el resto de la aplicación)
+$color-terracotta: #c75a36;
+$color-terracotta-light: #d98166;
+$color-terracotta-dark: #a04527;
+$color-cream: #f5e8dc;
+$color-perdida: #f39c12;
+$color-encontrada: #5cb85c;
+$color-adopcion: #3498db;
+
+// Estilos para el modal
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+
+.modal-contenido {
+  background-color: white;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  animation: slideIn 0.3s ease;
+}
+
+.modal-cabecera {
+  padding: 15px 20px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  align-items: center;
+  position: relative;
+
+  h2 {
+    color: $color-terracotta-dark;
+    margin: 0;
+    font-size: 1.5rem;
+    flex-grow: 1;
+  }
+
+  .modal-estado {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: white;
+    margin-right: 35px;
+
+    &.perdida {
+      background-color: $color-perdida;
+    }
+
+    &.encontrada {
+      background-color: $color-encontrada;
+    }
+
+    &.adopcion {
+      background-color: $color-adopcion;
+    }
+  }
+
+  .boton-cerrar {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: #777;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background-color: #f0f0f0;
+      color: #333;
+    }
+  }
+}
+
+.modal-cuerpo {
+  padding: 20px;
+
+  .imagen-mascota-detalle {
+    width: 100%;
+    height: 280px;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .detalles-mascota {
+    .detalle-item {
+      margin-bottom: 15px;
+
+      .etiqueta {
+        font-weight: bold;
+        color: #555;
+        display: block;
+        margin-bottom: 3px;
+        font-size: 0.9rem;
+      }
+
+      .valor {
+        color: #333;
+        font-size: 1rem;
+      }
+
+      .estado-valor {
+        font-weight: bold;
+
+        &.perdida {
+          color: $color-perdida;
+        }
+
+        &.encontrada {
+          color: $color-encontrada;
+        }
+
+        &.adopcion {
+          color: $color-adopcion;
+        }
+      }
+    }
+  }
+}
+
+.modal-pie {
+  padding: 15px 20px;
+  border-top: 1px solid #eee;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+
+  button {
+    padding: 8px 15px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+
+    &.boton-contactar {
+      background-color: $color-terracotta;
+      color: white;
+
+      &:hover {
+        background-color: $color-terracotta-dark;
+      }
+    }
+
+    &.boton-compartir {
+      background-color: #5585d8;
+      color: white;
+
+      &:hover {
+        background-color: darken(#5585d8, 10%);
+      }
+    }
+
+    &.boton-cerrar-pie {
+      background-color: #f0f0f0;
+      color: #333;
+
+      &:hover {
+        background-color: #e0e0e0;
+      }
+    }
+
+    i {
+      margin-right: 5px;
+    }
+  }
+}
+
+// Animaciones
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+// Prevenir scroll cuando el modal está abierto
+:host {
+  display: contents;
+}
+
+:host-context(body.modal-abierto) {
+  overflow: hidden;
+}
+
+// Responsive
+@media (max-width: 600px) {
+  .modal-contenido {
+    width: 95%;
+    max-height: 90vh;
+  }
+
+  .modal-pie {
+    flex-direction: column;
+
+    button {
+      width: 100%;
+    }
+  }
+}
