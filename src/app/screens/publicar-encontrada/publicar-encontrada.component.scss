@@ -1,0 +1,354 @@
+// Variables (mismas que en los otros componentes)
+$color-terracotta: #c75a36;
+$color-terracotta-light: #d98166;
+$color-terracotta-dark: #a04527;
+$color-cream: #f5e8dc;
+$color-green: #5cb85c;
+$color-error: #dc3545;
+
+// Colores de estados
+$color-perdida: #f39c12;
+$color-encontrada: #5cb85c;
+$color-adopcion: #3498db;
+
+// Estilos generales del contenedor
+.publicar-container {
+  min-height: 100vh;
+  background-color: $color-cream;
+  padding: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  // Animación de entrada
+  animation: fadeIn 0.5s ease;
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+}
+
+// Encabezado
+.encabezado {
+  text-align: center;
+  margin-bottom: 30px;
+
+  h1 {
+    color: $color-terracotta-dark;
+    font-size: 2rem;
+    margin-bottom: 5px;
+  }
+
+  .subtitulo {
+    color: #666;
+    font-size: 1.1rem;
+    font-weight: 300;
+  }
+}
+
+// Tarjeta del formulario
+.formulario-card {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  margin-bottom: 30px;
+}
+
+// Secciones del formulario
+.form-section {
+  margin-bottom: 30px;
+  padding-bottom: 25px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+
+  &:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  h2 {
+    color: $color-terracotta;
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+    font-weight: 500;
+  }
+}
+
+// Estilos de filas y grupos del formulario
+.form-row {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 15px;
+
+  .form-group {
+    flex: 1;
+  }
+}
+
+.form-group {
+  margin-bottom: 15px;
+
+  label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #444;
+  }
+
+  input, select, textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    font-size: 1rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+
+    &:focus {
+      border-color: $color-encontrada;
+      box-shadow: 0 0 0 3px rgba($color-encontrada, 0.2);
+      outline: none;
+    }
+
+    &.is-invalid {
+      border-color: $color-error;
+
+      &:focus {
+        box-shadow: 0 0 0 3px rgba($color-error, 0.2);
+      }
+    }
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 100px;
+  }
+}
+
+// Estilos para el radio button
+.radio-group {
+  display: flex;
+  gap: 15px;
+
+  .radio-option {
+    display: flex;
+    align-items: center;
+
+    input[type="radio"] {
+      width: auto;
+      margin-right: 5px;
+
+      &:checked + label {
+        color: $color-encontrada;
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+// Mensajes de error
+.mensaje-error {
+  color: $color-error;
+  font-size: 0.85rem;
+  margin-top: 5px;
+  animation: shake 0.3s ease;
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-5px); }
+    40%, 80% { transform: translateX(5px); }
+  }
+}
+
+// Uploader de foto
+.foto-uploader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  border: 2px dashed #ddd;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+
+  &.has-foto {
+    border-color: $color-encontrada;
+  }
+
+  .foto-preview {
+    margin-bottom: 15px;
+    width: 200px;
+    height: 200px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .upload-controls {
+    text-align: center;
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .boton-foto {
+      display: inline-block;
+      background-color: $color-encontrada;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      font-weight: 500;
+
+      &:hover {
+        background-color: darken($color-encontrada, 10%);
+      }
+
+      i {
+        margin-right: 8px;
+      }
+    }
+
+    span {
+      display: block;
+      margin-top: 10px;
+      color: #666;
+      font-size: 0.9rem;
+    }
+  }
+}
+
+// Botones del formulario
+.botones-formulario {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 20px;
+
+  button {
+    padding: 12px 25px;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    font-size: 1rem;
+
+    &:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+  }
+
+  .boton-secundario {
+    background-color: #f0f0f0;
+    color: #444;
+
+    &:hover:not(:disabled) {
+      background-color: #e0e0e0;
+    }
+  }
+
+  .boton-primario {
+    background-color: $color-encontrada;
+    color: white;
+
+    &:hover:not(:disabled) {
+      background-color: darken($color-encontrada, 10%);
+    }
+
+    .spinner {
+      display: inline-block;
+      animation: spin 1s infinite linear;
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    }
+  }
+}
+
+// Tarjeta de consejos
+.consejos-card {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-top: 30px;
+  border-left: 5px solid $color-encontrada;
+
+  h3 {
+    color: $color-encontrada;
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+
+    i {
+      margin-right: 8px;
+    }
+  }
+
+  ul {
+    padding-left: 25px;
+
+    li {
+      margin-bottom: 10px;
+      color: #555;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+// Diseño responsive
+@media (max-width: 768px) {
+  .publicar-container {
+    padding: 20px;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .formulario-card {
+    padding: 20px;
+  }
+
+  .botones-formulario {
+    flex-direction: column;
+
+    button {
+      width: 100%;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .encabezado {
+    h1 {
+      font-size: 1.5rem;
+    }
+
+    .subtitulo {
+      font-size: 1rem;
+    }
+  }
+
+  .form-section h2 {
+    font-size: 1.1rem;
+  }
+
+  .radio-group {
+    flex-direction: column;
+    gap: 8px;
+  }
+}

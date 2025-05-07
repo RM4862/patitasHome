@@ -1,0 +1,191 @@
+<div class="publicar-container">
+  <!-- Encabezado -->
+  <div class="encabezado">
+    <h1>Publicar Mascota Encontrada</h1>
+    <p class="subtitulo">Ayuda a que esta mascota regrese con su familia</p>
+  </div>
+
+  <!-- Formulario -->
+  <div class="formulario-card">
+    <form [formGroup]="mascotaForm" (ngSubmit)="onSubmit()">
+      <div class="form-section">
+        <h2>Información de la Mascota</h2>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="tipoMascota">Tipo de mascota</label>
+            <select id="tipoMascota" formControlName="tipoMascota"
+                [ngClass]="{'is-invalid': submitted && f['tipoMascota'].errors}">
+              <option value="">Seleccionar tipo</option>
+              <option *ngFor="let tipo of tiposMascota" [value]="tipo.value">
+                {{tipo.label}}
+              </option>
+            </select>
+            <div *ngIf="submitted && f['tipoMascota'].errors" class="mensaje-error">
+              Debes seleccionar un tipo de mascota
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="tamanio">Tamaño</label>
+            <select id="tamanio" formControlName="tamanio"
+                [ngClass]="{'is-invalid': submitted && f['tamanio'].errors}">
+              <option value="">Seleccionar tamaño</option>
+              <option *ngFor="let tamanio of tamaniosMascota" [value]="tamanio.value">
+                {{tamanio.label}}
+              </option>
+            </select>
+            <div *ngIf="submitted && f['tamanio'].errors" class="mensaje-error">
+              Debes seleccionar un tamaño
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="color">Color predominante</label>
+            <input type="text" id="color" formControlName="color" placeholder="Ej: Negro, marrón, blanco..."
+                [ngClass]="{'is-invalid': submitted && f['color'].errors}">
+            <div *ngIf="submitted && f['color'].errors" class="mensaje-error">
+              Ingresa el color predominante
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="sexo">Sexo</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="sexoMacho" formControlName="sexo" value="macho">
+                <label for="sexoMacho">Macho</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="sexoHembra" formControlName="sexo" value="hembra">
+                <label for="sexoHembra">Hembra</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="sexoDesconocido" formControlName="sexo" value="desconocido">
+                <label for="sexoDesconocido">No sé</label>
+              </div>
+            </div>
+            <div *ngIf="submitted && f['sexo'].errors" class="mensaje-error">
+              Selecciona una opción
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="descripcion">Descripción</label>
+          <textarea id="descripcion" formControlName="descripcion" rows="4"
+              placeholder="Describe la mascota (raza, características distintivas, collar, etc.)"
+              [ngClass]="{'is-invalid': submitted && f['descripcion'].errors}"></textarea>
+          <div *ngIf="submitted && f['descripcion'].errors" class="mensaje-error">
+            <div *ngIf="f['descripcion'].errors['required']">La descripción es obligatoria</div>
+            <div *ngIf="f['descripcion'].errors['minlength']">La descripción debe tener al menos 20 caracteres</div>
+            <div *ngIf="f['descripcion'].errors['maxlength']">La descripción no debe exceder los 300 caracteres</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h2>Detalles del Hallazgo</h2>
+
+        <div class="form-group">
+          <label for="ubicacion">Ubicación donde fue encontrada</label>
+          <input type="text" id="ubicacion" formControlName="ubicacion"
+              placeholder="Dirección, zona o punto de referencia"
+              [ngClass]="{'is-invalid': submitted && f['ubicacion'].errors}">
+          <div *ngIf="submitted && f['ubicacion'].errors" class="mensaje-error">
+            Ingresa la ubicación donde encontraste la mascota
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="fecha">Fecha</label>
+            <input type="date" id="fecha" formControlName="fecha"
+                [ngClass]="{'is-invalid': submitted && f['fecha'].errors}">
+            <div *ngIf="submitted && f['fecha'].errors" class="mensaje-error">
+              Selecciona la fecha
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="hora">Hora aproximada</label>
+            <input type="time" id="hora" formControlName="hora"
+                [ngClass]="{'is-invalid': submitted && f['hora'].errors}">
+            <div *ngIf="submitted && f['hora'].errors" class="mensaje-error">
+              Selecciona la hora
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h2>Información de Contacto</h2>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="contactoNombre">Nombre</label>
+            <input type="text" id="contactoNombre" formControlName="contactoNombre"
+                placeholder="Tu nombre"
+                [ngClass]="{'is-invalid': submitted && f['contactoNombre'].errors}">
+            <div *ngIf="submitted && f['contactoNombre'].errors" class="mensaje-error">
+              Ingresa tu nombre
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="contactoTelefono">Teléfono de contacto</label>
+            <input type="tel" id="contactoTelefono" formControlName="contactoTelefono"
+                placeholder="Tu número de teléfono"
+                [ngClass]="{'is-invalid': submitted && f['contactoTelefono'].errors}">
+            <div *ngIf="submitted && f['contactoTelefono'].errors" class="mensaje-error">
+              Ingresa un teléfono de contacto
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h2>Foto de la Mascota</h2>
+
+        <div class="foto-uploader" [class.has-foto]="fotoSeleccionada">
+          <div class="foto-preview" *ngIf="fotoSeleccionada">
+            <img [src]="fotoSeleccionada" alt="Foto de la mascota">
+          </div>
+          <div class="upload-controls">
+            <input type="file" id="foto" (change)="onFileChange($event)" accept="image/*" #fileInput
+                [ngClass]="{'is-invalid': submitted && f['foto'].errors}">
+            <label for="foto" class="boton-foto">
+              <i class="fas fa-camera"></i> Seleccionar foto
+            </label>
+            <span *ngIf="fotoSeleccionada">{{f['foto'].value}}</span>
+            <div *ngIf="submitted && f['foto'].errors" class="mensaje-error">
+              Debes subir una foto de la mascota
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="botones-formulario">
+        <button type="button" class="boton-secundario" (click)="cancelar()">Cancelar</button>
+        <button type="submit" class="boton-primario" [disabled]="loading">
+          <span *ngIf="!loading">Publicar</span>
+          <span *ngIf="loading" class="spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+          </span>
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div class="consejos-card">
+    <h3><i class="fas fa-lightbulb"></i> Consejos</h3>
+    <ul>
+      <li>Toma fotos claras y desde varios ángulos</li>
+      <li>Incluye detalles distintivos como marcas o colores especiales</li>
+      <li>Si la mascota tiene collar o identificación, menciónalo</li>
+      <li>Compartir la publicación en redes sociales aumenta las posibilidades de encontrar a los dueños</li>
+    </ul>
+  </div>
+</div>

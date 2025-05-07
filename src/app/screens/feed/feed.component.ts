@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-
+import { Router } from '@angular/router';
 interface Mascota {
   id: number;
   imagenUrl: string;
@@ -20,7 +20,7 @@ export class FeedComponent implements OnInit {
   // Control de visibilidad del modal
   modalVisible: boolean = false;
 
-  constructor() { }
+  constructor(private router: Router) { }
 
   ngOnInit(): void {
     // Cargar datos de ejemplo
@@ -69,17 +69,17 @@ export class FeedComponent implements OnInit {
 
   publicarMascotaPerdida(): void {
     console.log('Navegar al formulario de mascota perdida');
-    // Navegar al formulario de mascota perdida
+    this.router.navigate(['/publicarperdida']);
   }
 
   publicarMascotaEncontrada(): void {
     console.log('Navegar al formulario de mascota encontrada');
-    // Navegar al formulario de mascota encontrada
+    this.router.navigate(['/publicarencontrada']);
   }
 
   publicarEnAdopcion(): void {
     console.log('Navegar al formulario de adopción');
-    // Navegar al formulario de adopción
+    this.router.navigate(['/publicaradopcion']);
   }
 
   irAlPerfil(): void {

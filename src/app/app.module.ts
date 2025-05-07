@@ -9,6 +9,9 @@ import { LoginComponent } from './screens/login/login.component';
 import { RegisterComponent } from './screens/register/register.component';
 import { FeedComponent } from './screens/feed/feed.component';
 import { ModalMascotaComponent } from './modals/modal-mascota/modal-mascota.component';
+import { PublicarMascotaPerdidaComponent } from './screens/publicar-mascota-perdida/publicar-mascota-perdida.component';
+import { PublicarEncontradaComponent } from './screens/publicar-encontrada/publicar-encontrada.component';
+import { PublicarAdopcionComponent } from './screens/publicar-adopcion/publicar-adopcion.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +20,10 @@ import { ModalMascotaComponent } from './modals/modal-mascota/modal-mascota.comp
     LoginComponent,
     RegisterComponent,
     FeedComponent,
-    ModalMascotaComponent
+    ModalMascotaComponent,
+    PublicarMascotaPerdidaComponent,
+    PublicarEncontradaComponent,
+    PublicarAdopcionComponent
   ],
   imports: [
     BrowserModule,
