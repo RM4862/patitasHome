@@ -148,3 +148,37 @@ class Adopcion(models.Model):
     def __str__(self):
         return f"Adopción {self.id_adopcion} - Usuario {self.usuario.id}"
 
+#Modelo para publicaciones
+class Publicacion(models.Model):
+    TIPO_CHOICES = [
+        ('adopcion', 'Adopción'),
+        ('busqueda', 'Búsqueda'),
+        ('encontrada', 'Mascota Encontrada'),
+    ]
+    ESTADO_CHOICES = [
+        ('vigente', 'Vigente'),
+        ('finalizado', 'Finalizado'),
+    ]
+
+    id_publicacion = models.AutoField(primary_key=True)
+    usuario = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='publicaciones')
+    mascotas = models.ManyToManyField(Mascota, blank=True, related_name='publicaciones')
+    mascotas_encontradas = models.ManyToManyField(MascotaEncontrada, blank=True, related_name='publicaciones_encontradas')
+    tipo = models.CharField(max_length=20, choices=TIPO_CHOICES)
+    estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='vigente')
+    contenido = models.TextField()
+    reacciones = models.PositiveIntegerField(default=0)
+    fecha_registro = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Publicación {self.id_publicacion} - {self.tipo}"
+
+class Comentario(models.Model):
+    id_comentario = models.AutoField(primary_key=True)
+    publicacion = models.ForeignKey(Publicacion, on_delete=models.CASCADE, related_name='comentarios')
+    usuario = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='comentarios')
+    contenido = models.TextField()
+    fecha = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Comentario {self.id_comentario} en Publicación {self.publicacion.id_publicacion}"

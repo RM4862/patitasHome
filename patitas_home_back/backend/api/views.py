@@ -4,8 +4,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import UserSerializer, LoginSerializer, ChangePasswordSerializer
-from .serializers import MascotaEncontradaSerializer, AdopcionSerializer
+from .serializers import UserSerializer, LoginSerializer, ChangePasswordSerializer, MascotaSerializer
+from .serializers import MascotaEncontradaSerializer, AdopcionSerializer, PublicacionSerializer, ComentarioSerializer
 # Registro de usuario
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -86,4 +86,31 @@ def registrar_adopcion(request):
     if serializer.is_valid():
         serializer.save()
         return Response({'message': 'Adopción registrada exitosamente'}, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def crear_publicacion(request):
+    data = request.data.copy()
+    data['usuario'] = request.user.id
+    serializer = PublicacionSerializer(data=data)
+    if serializer.is_valid():
+        publicacion = serializer.save()
+        # Para ManyToMany, asigna después de guardar
+        if 'mascotas' in request.data:
+            publicacion.mascotas.set(request.data.get('mascotas', []))
+        if 'mascotas_encontradas' in request.data:
+            publicacion.mascotas_encontradas.set(request.data.get('mascotas_encontradas', []))
+        return Response({'message': 'Publicación creada exitosamente'}, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def crear_comentario(request):
+    data = request.data.copy()
+    data['usuario'] = request.user.id
+    serializer = ComentarioSerializer(data=data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response({'message': 'Comentario agregado exitosamente'}, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

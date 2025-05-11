@@ -3,6 +3,7 @@ from .models import CustomUser
 from .models import Mascota
 from .models import MascotaEncontrada
 from .models import Adopcion
+from .models import Publicacion
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     class Meta:
@@ -44,4 +45,17 @@ class MascotaEncontradaSerializer(serializers.ModelSerializer):
 class AdopcionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Adopcion
+        fields = '__all__'
+
+from .models import Publicacion, Comentario
+
+class ComentarioSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comentario
+        fields = '__all__'
+
+class PublicacionSerializer(serializers.ModelSerializer):
+    comentarios = ComentarioSerializer(many=True, read_only=True)
+    class Meta:
+        model = Publicacion
         fields = '__all__'
