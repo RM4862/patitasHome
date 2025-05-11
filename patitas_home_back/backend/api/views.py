@@ -5,7 +5,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import UserSerializer, LoginSerializer, ChangePasswordSerializer
-
+from .serializers import MascotaSerializer
 # Registro de usuario
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -13,7 +13,7 @@ def register(request):
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
         user = serializer.save()
-        return Response({'message': 'Usuario registrado exitosamente'}, 
+        return Response({'message': 'Usuario registrado exitosamente'},
                         status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -50,4 +50,16 @@ def change_password(request):
             user.save()
             return Response({'message': 'Contraseña actualizada correctamente'}, status=status.HTTP_200_OK)
         return Response({'error': 'La contraseña actual es incorrecta'}, status=status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# Vista para registrar mascotas
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def registrar_mascota(request):
+    data = request.data.copy()
+    data['usuario'] = request.user.id  # Asigna el usuario autenticado
+    serializer = MascotaSerializer(data=data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response({'message': 'Mascota registrada exitosamente'}, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

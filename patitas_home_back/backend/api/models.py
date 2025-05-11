@@ -40,7 +40,7 @@ class CustomUser(AbstractUser):
     numero_celular=models.CharField(max_length=15, default='0000000000')
     fecha_registro=models.DateTimeField(auto_now_add=True) #Fecha de registro al momento de crear el usuario
     ultima_actualizacion=models.DateTimeField(auto_now=True) #Fecha de la última actualización al momento de crear el usuario
-    
+
     objects = CustomUserManager()
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['nombre','apellido','fecha_nacimiento','genero','numero_celular']
@@ -57,4 +57,44 @@ class CustomUser(AbstractUser):
         if self.password and not self.password.startswith('pbkdf2_sha256$'):
             self.set_password(self.password)
         super().save(*args, **kwargs)
-    
+
+#Modelo para registrar mascotas
+class Mascota(models.Model):
+    ESPECIE_CHOICES = [
+        ('perro', 'Perro'),
+        ('gato', 'Gato'),
+        ('otro', 'Otro'),
+    ]
+    SEXO_CHOICES = [
+        ('M', 'Macho'),
+        ('H', 'Hembra'),
+        ('D', 'Desconocido'),
+    ]
+    ESTADO_PUBLICACION_CHOICES = [
+        ('perdido', 'Perdido'),
+        ('encontrado', 'Encontrado'),
+        ('adopcion', 'En adopción'),
+        ('otro', 'Otro'),
+    ]
+
+    id_mascota = models.AutoField(primary_key=True)
+    #Relación con de ,ascotas con el usuario
+    usuario = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='mascotas')
+    nombre = models.CharField(max_length=100)
+    especie = models.CharField(max_length=20, choices=ESPECIE_CHOICES)
+    raza = models.CharField(max_length=100, blank=True)
+    edad = models.PositiveIntegerField(null=True, blank=True)
+    sexo = models.CharField(max_length=1, choices=SEXO_CHOICES)
+    color = models.CharField(max_length=50, blank=True)
+    tamaño = models.CharField(max_length=50, blank=True)
+    peso = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    ultima_ubicacion = models.CharField(max_length=255, blank=True)
+    fecha_perdida = models.DateField(null=True, blank=True)
+    senas_particulares = models.TextField(blank=True)
+    estado_publicacion = models.CharField(max_length=20, choices=ESTADO_PUBLICACION_CHOICES)
+    contacto = models.CharField(max_length=100, blank=True)
+    recompensa = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    fotos = models.ImageField(upload_to='mascotas_fotos/', blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.nombre} ({self.especie})"

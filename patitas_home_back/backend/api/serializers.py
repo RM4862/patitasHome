@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import CustomUser
+from .models import Mascota
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -19,7 +20,7 @@ class UserSerializer(serializers.ModelSerializer):
             numero_celular=validated_data.get('numero_celular', '0000000000'),
     )
         return user
-    
+
 class ChangePasswordSerializer(serializers.Serializer):
     old_password = serializers.CharField(required=True)
     new_password = serializers.CharField(required = True)
@@ -27,3 +28,9 @@ class ChangePasswordSerializer(serializers.Serializer):
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField()
+
+#define el serializador para la mascota automaticamente
+class MascotaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Mascota
+        fields = '__all__'
