@@ -5,7 +5,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import UserSerializer, LoginSerializer, ChangePasswordSerializer
-from .serializers import MascotaSerializer
+from .serializers import MascotaEncontradaSerializer, AdopcionSerializer
 # Registro de usuario
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -52,7 +52,7 @@ def change_password(request):
         return Response({'error': 'La contraseña actual es incorrecta'}, status=status.HTTP_400_BAD_REQUEST)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# Vista para registrar mascotas
+# Vista para registrar mascotas perdidas
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def registrar_mascota(request):
@@ -62,4 +62,28 @@ def registrar_mascota(request):
     if serializer.is_valid():
         serializer.save()
         return Response({'message': 'Mascota registrada exitosamente'}, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#Vista para registrar mascotas encontradas
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def registrar_mascota_encontrada(request):
+    data = request.data.copy()
+    data['usuario'] = request.user.id
+    serializer = MascotaEncontradaSerializer(data=data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response({'message': 'Mascota encontrada registrada exitosamente'}, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# Vista para registrar adopciones
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def registrar_adopcion(request):
+    data = request.data.copy()
+    data['usuario'] = request.user.id
+    serializer = AdopcionSerializer(data=data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response({'message': 'Adopción registrada exitosamente'}, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

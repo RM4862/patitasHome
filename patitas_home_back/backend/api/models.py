@@ -58,7 +58,7 @@ class CustomUser(AbstractUser):
             self.set_password(self.password)
         super().save(*args, **kwargs)
 
-#Modelo para registrar mascotas
+#Modelo para registrar mascotas perdidas
 class Mascota(models.Model):
     ESPECIE_CHOICES = [
         ('perro', 'Perro'),
@@ -78,7 +78,7 @@ class Mascota(models.Model):
     ]
 
     id_mascota = models.AutoField(primary_key=True)
-    #Relación con de ,ascotas con el usuario
+    #Relación de mascotas con el usuario
     usuario = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='mascotas')
     nombre = models.CharField(max_length=100)
     especie = models.CharField(max_length=20, choices=ESPECIE_CHOICES)
@@ -98,3 +98,53 @@ class Mascota(models.Model):
 
     def __str__(self):
         return f"{self.nombre} ({self.especie})"
+
+#Modelo para mascotas encontradas
+class MascotaEncontrada(models.Model):
+    ESPECIE_CHOICES = [
+        ('perro', 'Perro'),
+        ('gato', 'Gato'),
+        ('otro', 'Otro'),
+    ]
+    SEXO_CHOICES = [
+        ('M', 'Macho'),
+        ('H', 'Hembra'),
+        ('D', 'Desconocido'),
+    ]
+    ESTADO_PUBLICACION_CHOICES = [
+        ('encontrado', 'Encontrado'),
+        ('adopcion', 'En adopción'),
+        ('otro', 'Otro'),
+    ]
+
+    id_mascota_encontrada = models.AutoField(primary_key=True)
+    usuario = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='mascotas_encontradas')
+    nombre = models.CharField(max_length=100)
+    especie = models.CharField(max_length=20, choices=ESPECIE_CHOICES)
+    raza = models.CharField(max_length=100, blank=True)
+    edad = models.PositiveIntegerField(null=True, blank=True)
+    sexo = models.CharField(max_length=1, choices=SEXO_CHOICES)
+    color = models.CharField(max_length=50, blank=True)
+    tamaño = models.CharField(max_length=50, blank=True)
+    peso = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    ultima_ubicacion = models.CharField(max_length=255, blank=True)
+    fecha_encontrada = models.DateField(null=True, blank=True)
+    senas_particulares = models.TextField(blank=True)
+    estado_publicacion = models.CharField(max_length=20, choices=ESTADO_PUBLICACION_CHOICES)
+    contacto = models.CharField(max_length=100, blank=True)
+    recompensa = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    fotos = models.ImageField(upload_to='mascotas_encontradas_fotos/', blank=True, null=True)
+    id_adopcion = models.ForeignKey('Adopcion', on_delete=models.SET_NULL, null=True, blank=True, related_name='mascotas_encontradas')
+
+    def __str__(self):
+        return f"{self.nombre} ({self.especie})"
+
+#Modelo para registrar adopciones
+class Adopcion(models.Model):
+    id_adopcion = models.AutoField(primary_key=True)
+    usuario = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='adopciones')
+    mascota_encontrada = models.ForeignKey(MascotaEncontrada, on_delete=models.CASCADE, related_name='adopciones')
+
+    def __str__(self):
+        return f"Adopción {self.id_adopcion} - Usuario {self.usuario.id}"
+

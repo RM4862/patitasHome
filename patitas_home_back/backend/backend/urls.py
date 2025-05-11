@@ -17,12 +17,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from api import views
-from api.views import registrar_mascota
+from api.views import registrar_mascota, registrar_mascota_encontrada, registrar_adopcion
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/register/', views.register, name='register'),  # Añadir 'api/' al inicio
-    path('api/login/', views.login, name='login'),          # Añadir 'api/' al inicio
-    path ('api/change_password/',views.change_password,name='change_password'),
-    path ('api/registrar_mascota/',views.registrar_mascota,name='registrar_mascota'),
-
+    path('api/register/', views.register, name='register'),
+    path('api/login/', views.login, name='login'),
+    path('api/change_password/', views.change_password, name='change_password'),
+    path('api/registrar_mascota/', registrar_mascota, name='registrar_mascota'),
+    path('api/registrar_mascota_encontrada/', registrar_mascota_encontrada, name='registrar_mascota_encontrada'),
+    path('api/registrar_adopcion/', registrar_adopcion, name='registrar_adopcion'),
 ]

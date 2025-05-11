@@ -1,7 +1,8 @@
 from rest_framework import serializers
 from .models import CustomUser
 from .models import Mascota
-
+from .models import MascotaEncontrada
+from .models import Adopcion
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     class Meta:
@@ -33,4 +34,14 @@ class LoginSerializer(serializers.Serializer):
 class MascotaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Mascota
+        fields = '__all__'
+
+class MascotaEncontradaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MascotaEncontrada
+        fields = '__all__'
+
+class AdopcionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Adopcion
         fields = '__all__'
