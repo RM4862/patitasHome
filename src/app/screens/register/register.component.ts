@@ -1,19 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AuthService } from '../auth.service';  // Inyecta el servicio de autenticación
 
-// Validador personalizado para comprobar que las contraseñas coincidan
-export function MustMatch(controlName: string, matchingControlName: string) {
+// Definición del validador personalizado MustMatch
+function MustMatch(controlName: string, matchingControlName: string) {
   return (formGroup: FormGroup) => {
     const control = formGroup.controls[controlName];
     const matchingControl = formGroup.controls[matchingControlName];
 
     if (matchingControl.errors && !matchingControl.errors['mustMatch']) {
-      // devuelve si otro validador ya ha encontrado un error
       return;
     }
 
-    // establece error en matchingControl si la validación falla
     if (control.value !== matchingControl.value) {
       matchingControl.setErrors({ mustMatch: true });
     } else {
@@ -28,21 +27,21 @@ export function MustMatch(controlName: string, matchingControlName: string) {
   styleUrls: ['./register.component.scss']
 })
 export class RegisterComponent implements OnInit {
-  registerForm!: FormGroup; // Añadimos el operador ! para indicar que será inicializado más tarde
+  registerForm!: FormGroup;
   submitted = false;
   showPassword = false;
   showConfirmPassword = false;
 
   constructor(
     private formBuilder: FormBuilder,
-    private router: Router
+    private router: Router,
+    private authService: AuthService  // Inyecta el servicio
   ) { }
 
   ngOnInit(): void {
     this.initForm();
   }
 
-  // Inicializar el formulario con validaciones
   initForm(): void {
     this.registerForm = this.formBuilder.group({
       firstName: ['', Validators.required],
@@ -57,37 +56,35 @@ export class RegisterComponent implements OnInit {
     });
   }
 
-  // Getter para acceder fácilmente a los controles del formulario
   get f() {
     return this.registerForm.controls;
   }
 
-  // Mostrar/ocultar contraseña
   togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
   }
 
-  // Mostrar/ocultar confirmación de contraseña
   toggleConfirmPasswordVisibility(): void {
     this.showConfirmPassword = !this.showConfirmPassword;
   }
 
-  // Enviar formulario
   onSubmit(): void {
     this.submitted = true;
 
-    // Detener si el formulario es inválido
     if (this.registerForm.invalid) {
       return;
     }
 
-    // TODO: Implementar lógica de registro
-    console.log('Registrando usuario con:', this.registerForm.value);
+    const { firstName, lastName, email, phone, password } = this.registerForm.value;
 
-    // Simulación de registro exitoso
-    setTimeout(() => {
-      // Navegar al login o dashboard después del registro
-      this.router.navigate(['/login']);
-    }, 1000);
+    this.authService.register(firstName, lastName, email, phone, password).subscribe(
+      data => {
+        // Si el registro es exitoso, redirigir al login
+        this.router.navigate(['/login']);
+      },
+      error => {
+        console.error('Registration error:', error);
+      }
+    );
   }
 }
