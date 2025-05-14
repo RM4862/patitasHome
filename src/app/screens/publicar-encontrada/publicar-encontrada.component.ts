@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { MascotaService } from '../mascota.service';  // Asegúrate de que MascotaService esté importado
+import { AuthService } from '../auth.service';  // Importar AuthService para manejar JWT
 
 @Component({
   selector: 'app-publicar-encontrada',
@@ -12,6 +14,7 @@ export class PublicarEncontradaComponent implements OnInit {
   submitted = false;
   loading = false;
   fotoSeleccionada: string | ArrayBuffer | null = null;
+  token: string | null = null; // Aquí guardamos el token JWT
 
   // Opciones para los selectores
   tiposMascota = [
@@ -29,7 +32,9 @@ export class PublicarEncontradaComponent implements OnInit {
 
   constructor(
     private formBuilder: FormBuilder,
-    private router: Router
+    private router: Router,
+    private mascotaService: MascotaService,  // Asegúrate de que MascotaService esté inyectado
+    private authService: AuthService  // Inyectar AuthService
   ) {
     this.mascotaForm = this.formBuilder.group({
       tipoMascota: ['', Validators.required],
@@ -44,6 +49,9 @@ export class PublicarEncontradaComponent implements OnInit {
       contactoTelefono: ['', Validators.required],
       foto: ['', Validators.required]
     });
+
+    // Aquí obtenemos el token JWT desde el localStorage
+    this.token = localStorage.getItem('token');  // O cualquier otro método de almacenamiento del token
   }
 
   ngOnInit(): void {
@@ -60,7 +68,7 @@ export class PublicarEncontradaComponent implements OnInit {
   onFileChange(event: any): void {
     const reader = new FileReader();
 
-    if(event.target.files && event.target.files.length) {
+    if (event.target.files && event.target.files.length) {
       const [file] = event.target.files;
 
       reader.onload = () => {
@@ -91,17 +99,30 @@ export class PublicarEncontradaComponent implements OnInit {
 
     this.loading = true;
 
-    // Aquí iría la lógica para enviar los datos al backend
-    console.log('Datos del formulario:', this.mascotaForm.value);
+    // Si el token existe, enviamos los datos
+    if (this.token) {
+      const mascotaEncontrada = {
+        ...this.mascotaForm.value,
+        estado: 'encontrada',
+        // Aquí iría la lógica para subir las imágenes al servidor si es necesario
+        imagenUrl: this.fotoSeleccionada || 'assets/images/default-pet.jpg'  // Foto por defecto si no se ha seleccionado una
+      };
 
-    // Simular una espera de carga
-    setTimeout(() => {
+      this.mascotaService.publicarMascotaEncontrada(mascotaEncontrada, this.token).subscribe(
+        data => {
+          this.loading = false;
+          alert('¡Mascota encontrada publicada con éxito!');
+          this.router.navigate(['/feed']);
+        },
+        error => {
+          this.loading = false;
+          console.error('Error al publicar la mascota encontrada', error);
+        }
+      );
+    } else {
+      console.error('No se encontró un token JWT válido.');
       this.loading = false;
-
-      // Mostrar un mensaje de éxito y redirigir
-      alert('¡Publicación creada con éxito!');
-      this.router.navigate(['/feed']);
-    }, 1500);
+    }
   }
 
   cancelar(): void {
@@ -110,3 +131,4 @@ export class PublicarEncontradaComponent implements OnInit {
     }
   }
 }
+
