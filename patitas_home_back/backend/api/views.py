@@ -1,9 +1,12 @@
 from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, parser_classes
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.response import Response
+from rest_framework import status
 from .serializers import UserSerializer, LoginSerializer, ChangePasswordSerializer, MascotaSerializer
 from .serializers import MascotaEncontradaSerializer, AdopcionSerializer, PublicacionSerializer, ComentarioSerializer
 # Registro de usuario
@@ -55,6 +58,7 @@ def change_password(request):
 # Vista para registrar mascotas perdidas
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser])
 def registrar_mascota(request):
     data = request.data.copy()
     data['usuario'] = request.user.id  # Asigna el usuario autenticado

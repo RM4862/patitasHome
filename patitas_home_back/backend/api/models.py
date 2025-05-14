@@ -63,38 +63,33 @@ class Mascota(models.Model):
     ESPECIE_CHOICES = [
         ('perro', 'Perro'),
         ('gato', 'Gato'),
+        ('ave', 'Ave'),
+        ('conejo', 'Conejo'),
         ('otro', 'Otro'),
     ]
     SEXO_CHOICES = [
-        ('M', 'Macho'),
-        ('H', 'Hembra'),
-        ('D', 'Desconocido'),
-    ]
-    ESTADO_PUBLICACION_CHOICES = [
-        ('perdido', 'Perdido'),
-        ('encontrado', 'Encontrado'),
-        ('adopcion', 'En adopción'),
-        ('otro', 'Otro'),
+        ('macho', 'Macho'),
+        ('hembra', 'Hembra'),
+        ('desconocido', 'No lo sé'),
     ]
 
     id_mascota = models.AutoField(primary_key=True)
-    #Relación de mascotas con el usuario
     usuario = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='mascotas')
     nombre = models.CharField(max_length=100)
     especie = models.CharField(max_length=20, choices=ESPECIE_CHOICES)
+    otra_especie = models.CharField(max_length=100, blank=True)  # Solo si especie == 'otro'
     raza = models.CharField(max_length=100, blank=True)
     edad = models.PositiveIntegerField(null=True, blank=True)
-    sexo = models.CharField(max_length=1, choices=SEXO_CHOICES)
-    color = models.CharField(max_length=50, blank=True)
-    tamaño = models.CharField(max_length=50, blank=True)
-    peso = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
-    ultima_ubicacion = models.CharField(max_length=255, blank=True)
+    unidad_edad = models.CharField(max_length=20, blank=True)  # año(s), mes(es), semana(s)
+    sexo = models.CharField(max_length=20, choices=SEXO_CHOICES)
+    color_principal = models.CharField(max_length=50, blank=True)
+    caracteristicas_especiales = models.TextField(blank=True)
     fecha_perdida = models.DateField(null=True, blank=True)
-    senas_particulares = models.TextField(blank=True)
-    estado_publicacion = models.CharField(max_length=20, choices=ESTADO_PUBLICACION_CHOICES)
-    contacto = models.CharField(max_length=100, blank=True)
-    recompensa = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    fotos = models.ImageField(upload_to='mascotas_fotos/', blank=True, null=True)
+    lugar_perdida = models.CharField(max_length=255, blank=True)
+    ultima_vez = models.TextField(blank=True)
+    telefono = models.CharField(max_length=20)
+    notas_adicionales = models.TextField(blank=True)
+    fotos = models.ImageField(upload_to='mascotas_fotos/', blank=True, null=True)  # Para una sola foto. Para varias, usa un modelo aparte.
 
     def __str__(self):
         return f"{self.nombre} ({self.especie})"
@@ -173,6 +168,7 @@ class Publicacion(models.Model):
     def __str__(self):
         return f"Publicación {self.id_publicacion} - {self.tipo}"
 
+#Modelo para comentario
 class Comentario(models.Model):
     id_comentario = models.AutoField(primary_key=True)
     publicacion = models.ForeignKey(Publicacion, on_delete=models.CASCADE, related_name='comentarios')
@@ -182,3 +178,40 @@ class Comentario(models.Model):
 
     def __str__(self):
         return f"Comentario {self.id_comentario} en Publicación {self.publicacion.id_publicacion}"
+
+#Modelo para mensajes
+class Mensaje(models.Model):
+    id_mensaje = models.AutoField(primary_key=True)
+    emisor = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='mensajes_enviados')
+    receptor = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='mensajes_recibidos')
+    contenido = models.TextField()
+    fecha_envio = models.DateTimeField(auto_now_add=True)
+    leido = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Mensaje de {self.emisor} a {self.receptor}"
+
+#Modelo para notificaciones
+class Notificacion(models.Model):
+    id_notificacion = models.AutoField(primary_key=True)
+    usuario = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='notificaciones')
+    mensaje = models.CharField(max_length=255)
+    leida = models.BooleanField(default=False)
+    fecha = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Notificación para {self.usuario}"
+
+#Modelo para reacciones
+class Reaccion(models.Model):
+    id_reaccion = models.AutoField(primary_key=True)
+    usuario = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='reacciones')
+    publicacion = models.ForeignKey(Publicacion, on_delete=models.CASCADE, related_name='reacciones_obj')  # Cambiado aquí
+    tipo = models.CharField(max_length=20, default='me_encanta')  # Solo "me_encanta" por ahora
+    fecha = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('usuario', 'publicacion')  # Un usuario solo puede reaccionar una vez por publicación
+
+    def __str__(self):
+        return f"{self.usuario} reaccionó a {self.publicacion}"

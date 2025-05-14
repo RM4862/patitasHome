@@ -36,9 +36,10 @@
         </div>
 
         <div class="campo" *ngIf="formularioMascota.get('especie')?.value === 'otro'">
-          <label for="otraEspecie">Especifica la especie</label>
-          <input type="text" id="otraEspecie" formControlName="otraEspecie" placeholder="Ej: Hurón">
+          <label for="otra_especie">Especifica la especie</label>
+          <input type="text" id="otra_especie" formControlName="otra_especie" placeholder="Ej: Hurón">
         </div>
+
 
         <div class="campo">
           <label for="raza">Raza (opcional)</label>
@@ -49,12 +50,12 @@
           <label for="edad">Edad aproximada</label>
           <div class="campo-grupo">
             <input type="number" id="edad" formControlName="edad" min="0" placeholder="Ej: 3">
-            <select id="unidadEdad" formControlName="unidadEdad">
+            <select id="unidad_edad" formControlName="unidad_edad">
               <option value="año(s)">Año(s)</option>
               <option value="mes(es)">Mes(es)</option>
               <option value="semana(s)">Semana(s)</option>
             </select>
-          </div>
+           </div>
         </div>
 
         <div class="campo">
@@ -81,15 +82,15 @@
         <h2>Características</h2>
 
         <div class="campo">
-          <label for="colorPrincipal">Color principal</label>
-          <input type="text" id="colorPrincipal" formControlName="colorPrincipal" placeholder="Ej: Marrón">
-        </div>
+          <label for="color_principal">Color principal</label>
+          <input type="text" id="color_principal" formControlName="color_principal" placeholder="Ej: Marrón">
+      </div>
 
         <div class="campo">
-          <label for="caracteristicasEspeciales">Características especiales</label>
-          <textarea id="caracteristicasEspeciales" formControlName="caracteristicasEspeciales" rows="3"
+          <label for="caracteristicas_especiales">Características especiales</label>
+          <textarea id="caracteristicas_especiales" formControlName="caracteristicas_especiales" rows="3"
             placeholder="Ej: Tiene una mancha blanca en la pata derecha, lleva un collar rojo..."></textarea>
-        </div>
+      </div>
       </div>
 
       <!-- Sección de información de pérdida -->
@@ -97,24 +98,24 @@
         <h2>Información de Pérdida</h2>
 
         <div class="campo">
-          <label for="fechaPerdida">Fecha de pérdida</label>
-          <input type="date" id="fechaPerdida" formControlName="fechaPerdida">
-          <div class="error-mensaje" *ngIf="formularioMascota.get('fechaPerdida')?.invalid && formularioMascota.get('fechaPerdida')?.touched">
+          <label for="fecha_perdida">Fecha de pérdida</label>
+          <input type="date" id="fecha_perdida" formControlName="fecha_perdida">
+          <div class="error-mensaje" *ngIf="formularioMascota.get('fecha_perdida')?.invalid && formularioMascota.get('fecha_perdida')?.touched">
             Por favor ingresa la fecha de pérdida
-          </div>
         </div>
+      </div>
 
         <div class="campo">
-          <label for="lugarPerdida">Lugar de pérdida</label>
-          <input type="text" id="lugarPerdida" formControlName="lugarPerdida" placeholder="Ej: Parque Central, Avenida Principal...">
-          <div class="error-mensaje" *ngIf="formularioMascota.get('lugarPerdida')?.invalid && formularioMascota.get('lugarPerdida')?.touched">
+          <label for="lugar_perdida">Lugar de pérdida</label>
+          <input type="text" id="lugar_perdida" formControlName="lugar_perdida" placeholder="Ej: Parque Central, Avenida Principal...">
+          <div class="error-mensaje" *ngIf="formularioMascota.get('lugar_perdida')?.invalid && formularioMascota.get('lugar_perdida')?.touched">
             Por favor ingresa el lugar donde se perdió tu mascota
           </div>
         </div>
 
         <div class="campo">
-          <label for="ultimaVez">Última vez visto</label>
-          <textarea id="ultimaVez" formControlName="ultimaVez" rows="2"
+          <label for="ultima_vez">Última vez visto</label>
+          <textarea id="ultima_vez" formControlName="ultima_vez" rows="2"
             placeholder="Ej: Lo vi por última vez cuando salió corriendo hacia el parque..."></textarea>
         </div>
       </div>
@@ -161,8 +162,8 @@
         </div>
 
         <div class="campo">
-          <label for="notasAdicionales">Notas adicionales</label>
-          <textarea id="notasAdicionales" formControlName="notasAdicionales" rows="3"
+          <label for="notas_adicionales">Notas adicionales</label>
+          <textarea id="notas_adicionales" formControlName="notas_adicionales" rows="3"
             placeholder="Información adicional que quieras compartir..."></textarea>
         </div>
       </div>

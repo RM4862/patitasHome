@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { MascotaService } from '../mascota.service';  // Asegúrate de que MascotaService esté importado
-import { AuthService } from '../auth.service';  // Importar AuthService para manejar JWT
+import { MascotaService } from 'src/services/mascota.service';  // Asegúrate de que MascotaService esté importado
+import { AuthService } from 'src/services/auth.service';  // Importar AuthService para manejar JWT
 
 @Component({
   selector: 'app-publicar-encontrada',

@@ -20,6 +20,7 @@ from api import views
 from api.views import registrar_mascota, registrar_mascota_encontrada, registrar_adopcion
 from api.views import crear_publicacion, crear_comentario
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/register/', views.register, name='register'),
@@ -29,5 +30,5 @@ urlpatterns = [
     path('api/registrar_mascota_encontrada/', registrar_mascota_encontrada, name='registrar_mascota_encontrada'),
     path('api/registrar_adopcion/', registrar_adopcion, name='registrar_adopcion'),
     path('api/crear_publicacion/', crear_publicacion, name='crear_publicacion'),
-    path('api/crear_comentario/', crear_comentario, name='crear_comentario'),
+    path('api/crear_comentario/', crear_comentario, name='crear_comentario')
 ]

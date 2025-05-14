@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class MascotaService {
 
-  private apiUrl = 'http://localhost:3000/api/mascotas';  // URL de tu API
+  private apiUrl = 'http://localhost:8000/api/registrar_mascota/';  // URL de tu API
 
   constructor(private http: HttpClient) { }
 

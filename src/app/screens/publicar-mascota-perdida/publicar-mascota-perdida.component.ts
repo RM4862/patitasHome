@@ -1,8 +1,8 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { MascotaService } from '../mascota.service';  // Asegúrate de que MascotaService esté importado
-import { AuthService } from '../auth.service';  // Importar AuthService para el manejo de JWT
+import { MascotaService } from 'src/services/mascota.service';
+import { AuthService } from 'src/services/auth.service';
 
 @Component({
   selector: 'app-publicar-mascota-perdida',
@@ -13,7 +13,7 @@ export class PublicarMascotaPerdidaComponent implements OnInit {
   formularioMascota: FormGroup;
   imagenPreview: string | null = null;
   imagenFile: File | null = null;
-  token: string | null = null; // Aquí guardamos el token JWT
+  token: string | null = null;
 
   @ViewChild('fileInput') fileInput!: ElementRef;
 
@@ -21,60 +21,54 @@ export class PublicarMascotaPerdidaComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private mascotaService: MascotaService,
-    private authService: AuthService  // Inyectar AuthService
+    private authService: AuthService
   ) {
     this.formularioMascota = this.fb.group({
       nombre: ['', Validators.required],
       especie: ['', Validators.required],
-      otraEspecie: [''],
+      otra_especie: [''],
       raza: [''],
       edad: [''],
-      unidadEdad: ['año(s)'],
+      unidad_edad: ['año(s)'],
       sexo: [''],
-      colorPrincipal: [''],
-      caracteristicasEspeciales: [''],
-      fechaPerdida: ['', Validators.required],
-      lugarPerdida: ['', Validators.required],
-      ultimaVez: [''],
+      color_principal: [''],
+      caracteristicas_especiales: [''],
+      fecha_perdida: ['', Validators.required],
+      lugar_perdida: ['', Validators.required],
+      ultima_vez: [''],
       telefono: ['', [Validators.required, Validators.pattern('^[0-9]{3}-[0-9]{3}-[0-9]{4}$|^[0-9]{10}$')]],
-      notasAdicionales: ['']
+      notas_adicionales: ['']
     });
 
-    // Aquí podrías almacenar el token JWT en una variable si ya está en el localStorage o en el servicio
-    this.token = localStorage.getItem('token');  // O el método que usas para almacenar el token
+    this.token = localStorage.getItem('token');
   }
 
   ngOnInit(): void {
-    // Escuchar cambios en el campo de especie para validaciones condicionales
     this.formularioMascota.get('especie')?.valueChanges.subscribe(especie => {
-      const otraEspecieControl = this.formularioMascota.get('otraEspecie');
-
+      const otraEspecieControl = this.formularioMascota.get('otra_especie');
       if (especie === 'otro') {
         otraEspecieControl?.setValidators([Validators.required]);
       } else {
         otraEspecieControl?.clearValidators();
       }
-
       otraEspecieControl?.updateValueAndValidity();
     });
   }
 
   onSubmit(): void {
     if (this.formularioMascota.valid) {
-      console.log('Formulario válido:', this.formularioMascota.value);
+      const formData = new FormData();
+      Object.entries(this.formularioMascota.value).forEach(([key, value]) => {
+        if (value !== null && value !== undefined) {
+          formData.append(key, value as string);
+        }
+      });
 
-      // Crear objeto con datos para enviar al servicio
-      const mascotaPerdida = {
-        ...this.formularioMascota.value,
-        estado: 'perdida',
-        imagenUrl: 'assets/images/default-pet.jpg'  // Imagen por defecto mientras tanto
-      };
-
-      console.log('Datos a guardar:', mascotaPerdida);
-
-      // Verificar si el token JWT está presente y añadirlo a la solicitud HTTP
+      if (this.imagenFile) {
+        formData.append('fotos', this.imagenFile);
+      }
       if (this.token) {
-        this.mascotaService.publicarMascotaPerdida(mascotaPerdida, this.token).subscribe(
+        this.mascotaService.publicarMascotaPerdida(formData, this.token).subscribe(
           data => {
             alert('¡Mascota perdida publicada con éxito!');
             this.volver();
@@ -91,15 +85,14 @@ export class PublicarMascotaPerdidaComponent implements OnInit {
     }
   }
 
-  marcarCamposComoTocados(formGroup: FormGroup): void {
-    Object.keys(formGroup.controls).forEach(campo => {
-      const control = formGroup.get(campo);
-      control?.markAsTouched();
-
-      if (control instanceof FormGroup) {
-        this.marcarCamposComoTocados(control);
-      }
-    });
+    marcarCamposComoTocados(formGroup: FormGroup): void {
+      Object.keys(formGroup.controls).forEach(campo => {
+        const control = formGroup.get(campo);
+        control?.markAsTouched();
+        if (control instanceof FormGroup) {
+          this.marcarCamposComoTocados(control);
+        }
+      });
   }
 
   triggerFileInput(): void {
@@ -108,12 +101,9 @@ export class PublicarMascotaPerdidaComponent implements OnInit {
 
   onImageSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
-
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
       this.imagenFile = file;
-
-      // Crear una vista previa de la imagen
       const reader = new FileReader();
       reader.onload = () => {
         this.imagenPreview = reader.result as string;
@@ -123,7 +113,7 @@ export class PublicarMascotaPerdidaComponent implements OnInit {
   }
 
   eliminarImagen(event: Event): void {
-    event.stopPropagation();  // Evitar que se active el input de archivo
+    event.stopPropagation();
     this.imagenPreview = null;
     this.imagenFile = null;
     this.fileInput.nativeElement.value = '';
@@ -133,4 +123,3 @@ export class PublicarMascotaPerdidaComponent implements OnInit {
     this.router.navigate(['/feed']);
   }
 }
-

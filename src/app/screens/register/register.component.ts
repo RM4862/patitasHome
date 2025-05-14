@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '../auth.service';  // Inyecta el servicio de autenticación
+import { AuthService } from 'src/services/auth.service';  // Inyecta el servicio de autenticación
 
 // Definición del validador personalizado MustMatch
 function MustMatch(controlName: string, matchingControlName: string) {
