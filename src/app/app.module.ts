@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http'; // Añadido para soportar HttpClient
-
+import { FormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './screens/home-screen/home-screen.component';
@@ -30,7 +30,8 @@ import { PublicarAdopcionComponent } from './screens/publicar-adopcion/publicar-
     BrowserModule,
     AppRoutingModule,
     ReactiveFormsModule,
-    HttpClientModule // Añadido para habilitar HttpClient
+    HttpClientModule, // Añadido para habilitar HttpClient
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MascotaService } from 'src/services/mascota.service';
+import { AuthService } from 'src/services/auth.service';
 
 @Component({
   selector: 'app-feed',
@@ -9,35 +10,46 @@ import { MascotaService } from 'src/services/mascota.service';
 })
 export class FeedComponent implements OnInit {
   publicaciones: any[] = [];
-  mascotaSeleccionada: any = null;
-  modalVisible: boolean = false;
+  filtros = {
+    tipo_mascota: '',
+    raza: '',
+    color: '',
+    tamanio: '',
+    zona: ''
+  };
 
-  constructor(private router: Router, private mascotaService: MascotaService) { }
+  modalVisible = false;
+  mascotaSeleccionada: any = null;
+
+  constructor(
+    private router: Router,
+    private mascotaService: MascotaService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
     this.cargarPublicaciones();
   }
 
   cargarPublicaciones(): void {
-    this.mascotaService.getPublicaciones().subscribe(
-      data => {
-        console.log('Publicaciones recibidas:', data); // <-- Aquí agregas el log
-        this.publicaciones = data;
-      },
-      error => {
-        console.error('Error al cargar publicaciones', error);
-      }
+    this.mascotaService.getPublicaciones(this.filtros).subscribe(
+      data => this.publicaciones = data,
+      error => console.error('Error al cargar publicaciones', error)
     );
   }
 
-  verDetallesMascota(publicacion: any): void {
-    this.mascotaSeleccionada = publicacion;
-    this.modalVisible = true;
+  buscar(): void {
+    this.cargarPublicaciones();
   }
 
-  cerrarModal(): void {
-    this.modalVisible = false;
-    this.mascotaSeleccionada = null;
+  limpiarFiltros(): void {
+    this.filtros = { tipo_mascota: '', raza: '', color: '', tamanio: '', zona: '' };
+    this.cargarPublicaciones();
+  }
+
+  cerrarSesion(): void {
+    this.authService.logout();
+    this.router.navigate(['/home']);
   }
 
   publicarMascotaPerdida(): void {
@@ -52,15 +64,21 @@ export class FeedComponent implements OnInit {
     this.router.navigate(['/publicaradopcion']);
   }
 
+  verDetallesMascota(publicacion: any): void {
+    this.mascotaSeleccionada = publicacion;
+    this.modalVisible = true;
+  }
+
+  cerrarModal(): void {
+    this.modalVisible = false;
+    this.mascotaSeleccionada = null;
+  }
+
   irAlPerfil(): void {
-    // Navegar al perfil del usuario
+    this.router.navigate(['/perfil']);
   }
 
   irANotificaciones(): void {
-    // Navegar a notificaciones
-  }
-
-  buscar(event: any): void {
-    // Implementar funcionalidad de búsqueda
+    this.router.navigate(['/notificaciones']);
   }
 }

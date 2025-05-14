@@ -1,15 +1,17 @@
 from rest_framework import status
+from django.db.models import Q
 from rest_framework.decorators import api_view, permission_classes, parser_classes
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.parsers import MultiPartParser, FormParser
-from rest_framework.response import Response
-from rest_framework import status
 from .models import Publicacion
-from .serializers import UserSerializer, LoginSerializer, ChangePasswordSerializer, MascotaSerializer
-from .serializers import MascotaEncontradaSerializer, AdopcionSerializer, PublicacionSerializer, ComentarioSerializer
+from .serializers import (
+    UserSerializer, LoginSerializer, ChangePasswordSerializer, MascotaSerializer,
+    MascotaEncontradaSerializer, AdopcionSerializer, PublicacionSerializer, ComentarioSerializer
+)
+
 # Registro de usuario
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -76,16 +78,24 @@ def registrar_mascota(request):
         return Response({'message': 'Mascota registrada y publicación creada exitosamente'}, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-#Vista para registrar mascotas encontradas
+# Vista para registrar mascotas encontradas
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser])
 def registrar_mascota_encontrada(request):
     data = request.data.copy()
     data['usuario'] = request.user.id
     serializer = MascotaEncontradaSerializer(data=data)
     if serializer.is_valid():
-        serializer.save()
-        return Response({'message': 'Mascota encontrada registrada exitosamente'}, status=status.HTTP_201_CREATED)
+        mascota_encontrada = serializer.save()
+        # Crear publicación asociada automáticamente
+        publicacion = Publicacion.objects.create(
+            usuario=request.user,
+            tipo='encontrada',  # 'encontrada' para mascotas encontradas
+            contenido=f"Se encontró a {mascota_encontrada.nombre}. {mascota_encontrada.senas_particulares}",
+        )
+        publicacion.mascotas_encontradas.add(mascota_encontrada)
+        return Response({'message': 'Mascota encontrada registrada y publicación creada exitosamente'}, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # Vista para registrar adopciones
@@ -132,5 +142,28 @@ def crear_comentario(request):
 @permission_classes([AllowAny])
 def lista_publicaciones(request):
     publicaciones = Publicacion.objects.all().order_by('-fecha_registro')
+
+    # Filtros
+    tipo_mascota = request.GET.get('tipo_mascota')
+    raza = request.GET.get('raza')
+    color = request.GET.get('color')
+    tamanio = request.GET.get('tamanio')
+    zona = request.GET.get('zona')
+
+    if tipo_mascota:
+        publicaciones = publicaciones.filter(mascotas__especie__icontains=tipo_mascota)
+    if raza:
+        publicaciones = publicaciones.filter(mascotas__raza__icontains=raza)
+    if color:
+        publicaciones = publicaciones.filter(mascotas__color_principal__icontains=color)
+    if tamanio:
+        publicaciones = publicaciones.filter(mascotas__caracteristicas_especiales__icontains=tamanio)
+    if zona:
+        publicaciones = publicaciones.filter(
+            Q(mascotas__lugar_perdida__icontains=zona) |
+            Q(mascotas_encontradas__ultima_ubicacion__icontains=zona)
+        )
+
+    publicaciones = publicaciones.distinct()
     serializer = PublicacionSerializer(publicaciones, many=True)
     return Response(serializer.data)

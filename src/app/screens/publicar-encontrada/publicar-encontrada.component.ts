@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { MascotaService } from 'src/services/mascota.service';  // Asegúrate de que MascotaService esté importado
-import { AuthService } from 'src/services/auth.service';  // Importar AuthService para manejar JWT
+import { MascotaService } from 'src/services/mascota.service';
+import { AuthService } from 'src/services/auth.service';
 
 @Component({
   selector: 'app-publicar-encontrada',
@@ -11,86 +11,84 @@ import { AuthService } from 'src/services/auth.service';  // Importar AuthServic
 })
 export class PublicarEncontradaComponent implements OnInit {
   mascotaForm: FormGroup;
-  submitted = false;
+  fotoPreviewUrl: string | null = null;
+  fotoSeleccionada: File | null = null;
+  token: string | null = null;
   loading = false;
-  fotoSeleccionada: string | ArrayBuffer | null = null;
-  token: string | null = null; // Aquí guardamos el token JWT
+  submitted = false;
 
-  // Opciones para los selectores
-  tiposMascota = [
-    { value: 'perro', label: 'Perro' },
-    { value: 'gato', label: 'Gato' },
-    { value: 'ave', label: 'Ave' },
-    { value: 'otro', label: 'Otro' }
-  ];
-
-  tamaniosMascota = [
-    { value: 'pequeño', label: 'Pequeño' },
-    { value: 'mediano', label: 'Mediano' },
-    { value: 'grande', label: 'Grande' }
-  ];
+  @ViewChild('fileInput') fileInput!: ElementRef;
 
   constructor(
     private formBuilder: FormBuilder,
     private router: Router,
-    private mascotaService: MascotaService,  // Asegúrate de que MascotaService esté inyectado
-    private authService: AuthService  // Inyectar AuthService
+    private mascotaService: MascotaService,
+    private authService: AuthService
   ) {
     this.mascotaForm = this.formBuilder.group({
-      tipoMascota: ['', Validators.required],
-      tamanio: ['', Validators.required],
-      color: ['', Validators.required],
+      nombre: ['', Validators.required],
+      especie: ['', Validators.required],
+      otra_especie: [''],
       sexo: ['', Validators.required],
-      descripcion: ['', [Validators.required, Validators.minLength(20), Validators.maxLength(300)]],
-      ubicacion: ['', Validators.required],
-      fecha: ['', Validators.required],
-      hora: ['', Validators.required],
-      contactoNombre: ['', Validators.required],
-      contactoTelefono: ['', Validators.required],
-      foto: ['', Validators.required]
+      tamaño: ['', Validators.required],
+      color: ['', Validators.required],
+      senas_particulares: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(300)]],
+      ultima_ubicacion: ['', Validators.required],
+      fecha_encontrada: ['', Validators.required],
+      contacto: ['', [Validators.required, Validators.pattern('^[0-9]{3}-[0-9]{3}-[0-9]{4}$|^[0-9]{10}$')]],
+      foto: [null, Validators.required]
     });
 
-    // Aquí obtenemos el token JWT desde el localStorage
-    this.token = localStorage.getItem('token');  // O cualquier otro método de almacenamiento del token
+    this.token = localStorage.getItem('token');
   }
 
   ngOnInit(): void {
-    // Inicializar con la fecha actual
     const fechaActual = new Date().toISOString().split('T')[0];
-    const horaActual = new Date().toTimeString().split(' ')[0].slice(0, 5);
-
     this.mascotaForm.patchValue({
-      fecha: fechaActual,
-      hora: horaActual
+      fecha_encontrada: fechaActual
+    });
+
+    this.mascotaForm.get('especie')?.valueChanges.subscribe(especie => {
+      const otraEspecieControl = this.mascotaForm.get('otra_especie');
+      if (especie === 'otro') {
+        otraEspecieControl?.setValidators([Validators.required]);
+      } else {
+        otraEspecieControl?.clearValidators();
+      }
+      otraEspecieControl?.updateValueAndValidity();
     });
   }
 
   onFileChange(event: any): void {
-    const reader = new FileReader();
-
     if (event.target.files && event.target.files.length) {
-      const [file] = event.target.files;
-
-      reader.onload = () => {
-        this.fotoSeleccionada = reader.result;
-        this.mascotaForm.patchValue({
-          foto: file.name
-        });
+      const file = event.target.files[0];
+      this.fotoSeleccionada = file;
+      this.mascotaForm.patchValue({
+        foto: file
+      });
+      // Previsualización
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.fotoPreviewUrl = e.target.result;
       };
-
       reader.readAsDataURL(file);
     }
   }
 
-  get f() { return this.mascotaForm.controls; }
+  eliminarImagen(event: Event): void {
+    event.stopPropagation();
+    this.fotoSeleccionada = null;
+    this.fotoPreviewUrl = null;
+    this.mascotaForm.patchValue({ foto: null });
+    this.fileInput.nativeElement.value = '';
+  }
 
   onSubmit(): void {
     this.submitted = true;
 
-    // Detener aquí si el formulario es inválido
     if (this.mascotaForm.invalid) {
-      // Hacer scroll al primer error
-      const firstElementWithError = document.querySelector('.is-invalid');
+      this.marcarCamposComoTocados(this.mascotaForm);
+      const firstElementWithError = document.querySelector('.ng-invalid.ng-touched');
       if (firstElementWithError) {
         firstElementWithError.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
@@ -99,16 +97,21 @@ export class PublicarEncontradaComponent implements OnInit {
 
     this.loading = true;
 
-    // Si el token existe, enviamos los datos
     if (this.token) {
-      const mascotaEncontrada = {
-        ...this.mascotaForm.value,
-        estado: 'encontrada',
-        // Aquí iría la lógica para subir las imágenes al servidor si es necesario
-        imagenUrl: this.fotoSeleccionada || 'assets/images/default-pet.jpg'  // Foto por defecto si no se ha seleccionado una
-      };
+      const formData = new FormData();
+      Object.entries(this.mascotaForm.value).forEach(([key, value]) => {
+        if (value !== null && value !== undefined && key !== 'foto') {
+          formData.append(key, value as string);
+        }
+      });
 
-      this.mascotaService.publicarMascotaEncontrada(mascotaEncontrada, this.token).subscribe(
+      formData.append('estado_publicacion', 'encontrado');
+
+      if (this.fotoSeleccionada) {
+        formData.append('fotos', this.fotoSeleccionada);
+      }
+
+      this.mascotaService.publicarMascotaEncontrada(formData, this.token).subscribe(
         data => {
           this.loading = false;
           alert('¡Mascota encontrada publicada con éxito!');
@@ -125,10 +128,19 @@ export class PublicarEncontradaComponent implements OnInit {
     }
   }
 
+  marcarCamposComoTocados(formGroup: FormGroup): void {
+    Object.keys(formGroup.controls).forEach(campo => {
+      const control = formGroup.get(campo);
+      control?.markAsTouched();
+      if (control instanceof FormGroup) {
+        this.marcarCamposComoTocados(control);
+      }
+    });
+  }
+
   cancelar(): void {
     if (confirm('¿Estás seguro de que deseas cancelar? Se perderán los datos ingresados.')) {
       this.router.navigate(['/feed']);
     }
   }
 }
-

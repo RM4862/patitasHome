@@ -6,22 +6,26 @@
         <i class="fas fa-home"></i> Feed
       </button>
     </div>
-    <div class="nav-centro">
-      <div class="contenedor-busqueda">
-        <input type="text" placeholder="Buscar mascotas..." (input)="buscar($event)">
-        <button class="boton-buscar">
-          <i class="fas fa-search"></i>
-        </button>
-      </div>
-    </div>
     <div class="nav-derecha">
-      <button class="boton-notificaciones" (click)="irANotificaciones()">
-        <i class="fas fa-bell"></i>
-      </button>
-      <button class="boton-perfil" (click)="irAlPerfil()">
-        <i class="fas fa-user"></i>
+      <button class="boton-salir" (click)="cerrarSesion()">
+        <i class="fas fa-sign-out-alt"></i> Salir
       </button>
     </div>
+  </div>
+
+  <!-- Barra de búsqueda avanzada -->
+  <div class="contenedor-busqueda">
+    <input type="text" placeholder="Tipo de mascota" [(ngModel)]="filtros.tipo_mascota">
+    <input type="text" placeholder="Raza" [(ngModel)]="filtros.raza">
+    <input type="text" placeholder="Color" [(ngModel)]="filtros.color">
+    <input type="text" placeholder="Tamaño" [(ngModel)]="filtros.tamanio">
+    <input type="text" placeholder="Zona o ubicación" [(ngModel)]="filtros.zona">
+    <button class="boton-buscar" (click)="buscar()">
+      <i class="fas fa-search"></i>
+    </button>
+    <button class="boton-buscar" (click)="limpiarFiltros()">
+      Limpiar
+    </button>
   </div>
 
   <!-- Área de Contenido Principal -->
@@ -54,41 +58,45 @@
       </div>
 
       <div class="tarjetas-mascotas">
-  <div class="tarjeta-mascota" *ngFor="let publicacion of publicaciones">
-    <div class="etiqueta-estado" [ngClass]="publicacion.tipo">
-      {{ publicacion.tipo | titlecase }}
-    </div>
-    <img [src]="
-      publicacion.mascotas.length && publicacion.mascotas[0].fotos
-        ? 'http://localhost:8000' + publicacion.mascotas[0].fotos
-        : (publicacion.mascotas_encontradas.length && publicacion.mascotas_encontradas[0].fotos
-          ? 'http://localhost:8000' + publicacion.mascotas_encontradas[0].fotos
-          : 'assets/images/default-pet.jpg')
-    " [alt]="
-      publicacion.mascotas.length
-        ? publicacion.mascotas[0].nombre
-        : (publicacion.mascotas_encontradas.length
-          ? publicacion.mascotas_encontradas[0].nombre
-          : 'Mascota')
-    ">
-    <div class="info-mascota">
-      <h3>
-        {{
-          publicacion.mascotas.length
-            ? publicacion.mascotas[0].nombre
-            : (publicacion.mascotas_encontradas.length
-              ? publicacion.mascotas_encontradas[0].nombre
-              : 'Mascota')
-        }}
-      </h3>
-      <p>{{ publicacion.contenido }}</p>
-      <div class="acciones-tarjeta">
-        <button class="boton-detalles" (click)="verDetallesMascota(publicacion)">Ver Detalles</button>
-        <button class="boton-contacto">Contactar</button>
+        <div class="tarjeta-mascota" *ngFor="let publicacion of publicaciones">
+          <div class="etiqueta-estado" [ngClass]="publicacion.tipo">
+            {{ publicacion.tipo | titlecase }}
+          </div>
+          <img
+            [src]="
+              publicacion.mascotas?.length && publicacion.mascotas[0]?.fotos
+                ? 'http://localhost:8000' + publicacion.mascotas[0].fotos
+                : (publicacion.mascotas_encontradas?.length && publicacion.mascotas_encontradas[0]?.fotos
+                  ? 'http://localhost:8000' + publicacion.mascotas_encontradas[0].fotos
+                  : 'assets/images/default-pet.jpg')
+            "
+            [alt]="
+              publicacion.mascotas?.length
+                ? publicacion.mascotas[0]?.nombre
+                : (publicacion.mascotas_encontradas?.length
+                  ? publicacion.mascotas_encontradas[0]?.nombre
+                  : 'Mascota')
+            "
+          >
+          <div class="info-mascota">
+            <h3>
+              {{
+                publicacion.mascotas?.length
+                  ? publicacion.mascotas[0]?.nombre
+                  : (publicacion.mascotas_encontradas?.length
+                    ? publicacion.mascotas_encontradas[0]?.nombre
+                    : 'Mascota')
+              }}
+            </h3>
+            <p>{{ publicacion.contenido }}</p>
+            <div class="acciones-tarjeta">
+              <button class="boton-detalles" (click)="verDetallesMascota(publicacion)">Ver Detalles</button>
+              <button class="boton-contacto">Contactar</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
 
     <!-- Barra Lateral Derecha -->
     <div class="barra-lateral barra-derecha">
