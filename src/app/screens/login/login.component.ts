@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AuthService } from '../auth.service';  // Inyecta el servicio de autenticación
 
 @Component({
   selector: 'app-login',
@@ -8,54 +9,54 @@ import { Router } from '@angular/router';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
-  loginForm!: FormGroup; // Añadimos el operador ! para indicar que será inicializado más tarde
+  loginForm!: FormGroup;
   submitted = false;
   showPassword = false;
 
   constructor(
     private formBuilder: FormBuilder,
-    private router: Router
+    private router: Router,
+    private authService: AuthService  // Inyecta el servicio
   ) { }
 
   ngOnInit(): void {
     this.initForm();
   }
 
-  // Inicializar el formulario con validaciones
   initForm(): void {
     this.loginForm = this.formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
-      remember: [false]
     });
   }
 
-  // Getter para acceder fácilmente a los controles del formulario
   get f() {
     return this.loginForm.controls;
   }
 
-  // Mostrar/ocultar contraseña
   togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
   }
 
-  // Enviar formulario
   onSubmit(): void {
     this.submitted = true;
-
-    // Detener si el formulario es inválido
     if (this.loginForm.invalid) {
       return;
     }
 
-    // TODO: Implementar lógica de autenticación
-    console.log('Iniciando sesión con:', this.loginForm.value);
+    const { email, password } = this.loginForm.value;
 
-    // Simulación de inicio de sesión exitoso
-    setTimeout(() => {
-      // Navegar al dashboard o página principal después del login
-      this.router.navigate(['/feed']);
-    }, 1000);
+    this.authService.login(email, password).subscribe(
+      data => {
+        // Si el login es exitoso, almacenar el token en localStorage
+        localStorage.setItem('token', data.token);
+        // Redirigir a la página de feed
+        this.router.navigate(['/feed']);
+      },
+      error => {
+        // Manejar errores de autenticación
+        console.error('Login error:', error);
+      }
+    );
   }
 }
