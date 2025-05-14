@@ -37,6 +37,7 @@ class MascotaSerializer(serializers.ModelSerializer):
         model = Mascota
         fields = '__all__'
 
+#define el serializador para mascota encontrada
 class MascotaEncontradaSerializer(serializers.ModelSerializer):
     class Meta:
         model = MascotaEncontrada
@@ -55,7 +56,10 @@ class ComentarioSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class PublicacionSerializer(serializers.ModelSerializer):
+    mascotas = MascotaSerializer(many=True, read_only=True)
+    mascotas_encontradas = MascotaEncontradaSerializer(many=True, read_only=True)
     comentarios = ComentarioSerializer(many=True, read_only=True)
+
     class Meta:
         model = Publicacion
         fields = '__all__'

@@ -7,6 +7,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework import status
+from .models import Publicacion
 from .serializers import UserSerializer, LoginSerializer, ChangePasswordSerializer, MascotaSerializer
 from .serializers import MascotaEncontradaSerializer, AdopcionSerializer, PublicacionSerializer, ComentarioSerializer
 # Registro de usuario
@@ -64,8 +65,15 @@ def registrar_mascota(request):
     data['usuario'] = request.user.id  # Asigna el usuario autenticado
     serializer = MascotaSerializer(data=data)
     if serializer.is_valid():
-        serializer.save()
-        return Response({'message': 'Mascota registrada exitosamente'}, status=status.HTTP_201_CREATED)
+        mascota = serializer.save()
+        # Crear publicación asociada automáticamente
+        publicacion = Publicacion.objects.create(
+            usuario=request.user,
+            tipo='busqueda',  # 'busqueda' para mascotas perdidas
+            contenido=f"Se busca a {mascota.nombre}. {mascota.caracteristicas_especiales}",
+        )
+        publicacion.mascotas.add(mascota)
+        return Response({'message': 'Mascota registrada y publicación creada exitosamente'}, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 #Vista para registrar mascotas encontradas
@@ -118,3 +126,11 @@ def crear_comentario(request):
         serializer.save()
         return Response({'message': 'Comentario agregado exitosamente'}, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# Vista para obtener publicaciones
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def lista_publicaciones(request):
+    publicaciones = Publicacion.objects.all().order_by('-fecha_registro')
+    serializer = PublicacionSerializer(publicaciones, many=True)
+    return Response(serializer.data)

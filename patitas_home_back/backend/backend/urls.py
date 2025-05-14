@@ -19,7 +19,9 @@ from django.urls import path
 from api import views
 from api.views import registrar_mascota, registrar_mascota_encontrada, registrar_adopcion
 from api.views import crear_publicacion, crear_comentario
-
+from api.views import lista_publicaciones
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -30,5 +32,9 @@ urlpatterns = [
     path('api/registrar_mascota_encontrada/', registrar_mascota_encontrada, name='registrar_mascota_encontrada'),
     path('api/registrar_adopcion/', registrar_adopcion, name='registrar_adopcion'),
     path('api/crear_publicacion/', crear_publicacion, name='crear_publicacion'),
-    path('api/crear_comentario/', crear_comentario, name='crear_comentario')
+    path('api/crear_comentario/', crear_comentario, name='crear_comentario'),
+    path('api/publicaciones/', lista_publicaciones, name='lista_publicaciones'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

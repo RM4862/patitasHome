@@ -24,4 +24,10 @@ export class MascotaService {
     return this.http.post(this.apiUrl, mascota, { headers });
 
   }
+
+  // Método para obtener publicaciones
+  getPublicaciones(): Observable<any[]> {
+    return this.http.get<any[]>('http://localhost:8000/api/publicaciones/');
+  }
+
 }

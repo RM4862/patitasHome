@@ -54,24 +54,41 @@
       </div>
 
       <div class="tarjetas-mascotas">
-        <div class="tarjeta-mascota" *ngFor="let mascota of mascotas">
-          <div class="etiqueta-estado" [ngClass]="mascota.estado">
-            {{ mascota.estado | titlecase }}
-          </div>
-          <div class="imagen-mascota">
-            <img [src]="mascota.imagenUrl" [alt]="mascota.nombre">
-          </div>
-          <div class="info-mascota">
-            <h3>{{ mascota.nombre }}</h3>
-            <p>{{ mascota.descripcion }}</p>
-            <div class="acciones-tarjeta">
-              <button class="boton-detalles" (click)="verDetallesMascota(mascota)">Ver Detalles</button>
-              <button class="boton-contacto">Contactar</button>
-            </div>
-          </div>
-        </div>
+  <div class="tarjeta-mascota" *ngFor="let publicacion of publicaciones">
+    <div class="etiqueta-estado" [ngClass]="publicacion.tipo">
+      {{ publicacion.tipo | titlecase }}
+    </div>
+    <img [src]="
+      publicacion.mascotas.length && publicacion.mascotas[0].fotos
+        ? 'http://localhost:8000' + publicacion.mascotas[0].fotos
+        : (publicacion.mascotas_encontradas.length && publicacion.mascotas_encontradas[0].fotos
+          ? 'http://localhost:8000' + publicacion.mascotas_encontradas[0].fotos
+          : 'assets/images/default-pet.jpg')
+    " [alt]="
+      publicacion.mascotas.length
+        ? publicacion.mascotas[0].nombre
+        : (publicacion.mascotas_encontradas.length
+          ? publicacion.mascotas_encontradas[0].nombre
+          : 'Mascota')
+    ">
+    <div class="info-mascota">
+      <h3>
+        {{
+          publicacion.mascotas.length
+            ? publicacion.mascotas[0].nombre
+            : (publicacion.mascotas_encontradas.length
+              ? publicacion.mascotas_encontradas[0].nombre
+              : 'Mascota')
+        }}
+      </h3>
+      <p>{{ publicacion.contenido }}</p>
+      <div class="acciones-tarjeta">
+        <button class="boton-detalles" (click)="verDetallesMascota(publicacion)">Ver Detalles</button>
+        <button class="boton-contacto">Contactar</button>
       </div>
     </div>
+  </div>
+</div>
 
     <!-- Barra Lateral Derecha -->
     <div class="barra-lateral barra-derecha">
