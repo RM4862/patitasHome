@@ -331,3 +331,22 @@ $color-adopcion: #3498db;
     }
   }
 }
+
+.boton-volver {
+  background: none;
+  border: none;
+  color: #a04527; // O el color que uses en perdida
+  font-size: 1rem;
+  cursor: pointer;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+
+  i {
+    margin-right: 6px;
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
