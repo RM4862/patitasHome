@@ -186,9 +186,17 @@ def registrar_mascota_adopcion(request):
         if key.startswith('mascota_adopcion.'):
             field = key.replace('mascota_adopcion.', '')
             mascota_data[field] = data[key]
-    # NO agregues 'usuario' al diccionario, porque es read_only en el serializer
     serializer = MascotaAdopcionSerializer(data=mascota_data)
     if serializer.is_valid():
-        mascota_adopcion = serializer.save(usuario=request.user)  # <-- Así se asigna el usuario
-        return Response({'id': mascota_adopcion.id_mascota_adopcion, 'message': 'Mascota en adopción registrada exitosamente'}, status=status.HTTP_201_CREATED)
+        mascota_adopcion = serializer.save(usuario=request.user)
+        # Crear publicación asociada automáticamente
+        from .models import Publicacion
+        contenido = f"{mascota_adopcion.nombre} busca un nuevo hogar. {mascota_adopcion.descripcion}"
+        publicacion = Publicacion.objects.create(
+            usuario=request.user,
+            tipo='adopcion',
+            contenido=contenido,
+        )
+        publicacion.mascotas_adopcion.add(mascota_adopcion)
+        return Response({'id': mascota_adopcion.id_mascota_adopcion, 'message': 'Mascota en adopción registrada y publicación creada exitosamente'}, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

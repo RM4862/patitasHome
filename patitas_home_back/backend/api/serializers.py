@@ -85,6 +85,7 @@ class ComentarioSerializer(serializers.ModelSerializer):
 class PublicacionSerializer(serializers.ModelSerializer):
     mascotas = MascotaSerializer(many=True, read_only=True)
     mascotas_encontradas = MascotaEncontradaSerializer(many=True, read_only=True)
+    mascotas_adopcion = MascotaAdopcionSerializer(many=True, read_only=True)
     comentarios = ComentarioSerializer(many=True, read_only=True)
 
     class Meta:

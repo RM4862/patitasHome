@@ -13,27 +13,27 @@ export class MascotaService {
 
   constructor(private http: HttpClient) { }
 
-  // Método para publicar una mascota encontrada
+  // Publicar una mascota encontrada
   publicarMascotaEncontrada(mascota: any, token: string): Observable<any> {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
     return this.http.post(this.apiUrlEncontrada, mascota, { headers });
   }
 
-  // Método para publicar una mascota perdida
+  // Publicar una mascota perdida
   publicarMascotaPerdida(mascota: any, token: string): Observable<any> {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
     return this.http.post(this.apiUrlPerdida, mascota, { headers });
   }
 
-  // Método para registrar una adopción
+  // Registrar una mascota en adopción
   registrarAdopcion(formData: FormData, token: string): Observable<any> {
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`
     });
-    return this.http.post('http://localhost:8000/api/registrar_adopcion/', formData, { headers });
+    return this.http.post(this.apiUrlAdopcion, formData, { headers });
   }
 
-  // Ejemplo de método para obtener publicaciones (opcional)
+  // Obtener publicaciones (con filtros opcionales)
   getPublicaciones(filtros: any = {}): Observable<any[]> {
     let params = new HttpParams();
     Object.keys(filtros).forEach(key => {

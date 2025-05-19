@@ -166,6 +166,7 @@ class Publicacion(models.Model):
     usuario = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='publicaciones')
     mascotas = models.ManyToManyField(Mascota, blank=True, related_name='publicaciones')
     mascotas_encontradas = models.ManyToManyField(MascotaEncontrada, blank=True, related_name='publicaciones_encontradas')
+    mascotas_adopcion = models.ManyToManyField('MascotaAdopcion', blank=True, related_name='publicaciones_adopcion')
     tipo = models.CharField(max_length=20, choices=TIPO_CHOICES)
     estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='vigente')
     contenido = models.TextField()

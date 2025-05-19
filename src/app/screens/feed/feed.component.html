@@ -63,22 +63,26 @@
             {{ publicacion.tipo | titlecase }}
           </div>
           <img
-            class="imagen-mascota"
-            [src]="
-              publicacion.mascotas?.length && publicacion.mascotas[0]?.fotos
-                ? 'http://localhost:8000' + publicacion.mascotas[0].fotos
-                : (publicacion.mascotas_encontradas?.length && publicacion.mascotas_encontradas[0]?.fotos
-                  ? 'http://localhost:8000' + publicacion.mascotas_encontradas[0].fotos
-                  : 'assets/images/default-pet.jpg')
-            "
-            [alt]="
-              publicacion.mascotas?.length
-                ? publicacion.mascotas[0]?.nombre
-                : (publicacion.mascotas_encontradas?.length
-                  ? publicacion.mascotas_encontradas[0]?.nombre
-                  : 'Mascota')
-            "
-          >
+              class="imagen-mascota"
+              [src]="
+                publicacion.mascotas?.length && publicacion.mascotas[0]?.fotos
+                  ? 'http://localhost:8000' + publicacion.mascotas[0].fotos
+                  : (publicacion.mascotas_encontradas?.length && publicacion.mascotas_encontradas[0]?.fotos
+                    ? 'http://localhost:8000' + publicacion.mascotas_encontradas[0].fotos
+                    : (publicacion.mascotas_adopcion?.length && publicacion.mascotas_adopcion[0]?.foto
+                      ? 'http://localhost:8000' + publicacion.mascotas_adopcion[0].foto
+                      : 'assets/images/default-pet.jpg'))
+              "
+              [alt]="
+                publicacion.mascotas?.length
+                  ? publicacion.mascotas[0]?.nombre
+                  : (publicacion.mascotas_encontradas?.length
+                    ? publicacion.mascotas_encontradas[0]?.nombre
+                    : (publicacion.mascotas_adopcion?.length
+                      ? publicacion.mascotas_adopcion[0]?.nombre
+                      : 'Mascota'))
+              "
+            >
           <div class="info-mascota">
             <h3>
               {{
