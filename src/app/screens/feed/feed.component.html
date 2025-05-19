@@ -63,6 +63,7 @@
             {{ publicacion.tipo | titlecase }}
           </div>
           <img
+            class="imagen-mascota"
             [src]="
               publicacion.mascotas?.length && publicacion.mascotas[0]?.fotos
                 ? 'http://localhost:8000' + publicacion.mascotas[0].fotos
