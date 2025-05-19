@@ -1,59 +1,67 @@
-// Variables de color (igual que en el resto de la aplicación)
+// Variables (las mismas que en otros componentes)
 $color-terracotta: #c75a36;
 $color-terracotta-light: #d98166;
 $color-terracotta-dark: #a04527;
 $color-cream: #f5e8dc;
+$color-green: #5cb85c;
+$color-error: #dc3545;
+
+// Colores adicionales para diferentes estados de mascotas
 $color-perdida: #f39c12;
 $color-encontrada: #5cb85c;
 $color-adopcion: #3498db;
 
-// Estilos para el modal
 .modal-backdrop {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.7);
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   z-index: 1000;
-  animation: fadeIn 0.2s ease;
+  padding: 20px;
+  overflow-y: auto;
 }
 
 .modal-contenido {
+  width: 100%;
+  max-width: 700px;
   background-color: white;
-  border-radius: 10px;
-  width: 90%;
-  max-width: 600px;
-  max-height: 85vh;
-  overflow-y: auto;
+  border-radius: 12px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  animation: slideIn 0.3s ease;
+  overflow: hidden;
+  position: relative;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .modal-cabecera {
-  padding: 15px 20px;
-  border-bottom: 1px solid #eee;
+  padding: 16px 20px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  background-color: white;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   position: relative;
 
   h2 {
-    color: $color-terracotta-dark;
     margin: 0;
+    color: $color-terracotta-dark;
     font-size: 1.5rem;
     flex-grow: 1;
   }
 
   .modal-estado {
-    padding: 4px 10px;
+    padding: 5px 12px;
     border-radius: 20px;
+    color: white;
     font-size: 0.85rem;
     font-weight: bold;
-    color: white;
-    margin-right: 35px;
+    margin-right: 15px;
 
     &.perdida {
       background-color: $color-perdida;
@@ -69,24 +77,22 @@ $color-adopcion: #3498db;
   }
 
   .boton-cerrar {
-    position: absolute;
-    right: 15px;
-    top: 15px;
     background: none;
     border: none;
+    color: #888;
     font-size: 1.2rem;
     cursor: pointer;
-    color: #777;
-    width: 30px;
-    height: 30px;
+    padding: 5px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
+    width: 32px;
+    height: 32px;
     transition: all 0.2s ease;
 
     &:hover {
-      background-color: #f0f0f0;
+      background-color: rgba(0, 0, 0, 0.05);
       color: #333;
     }
   }
@@ -94,70 +100,127 @@ $color-adopcion: #3498db;
 
 .modal-cuerpo {
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow-y: auto;
 
-  .imagen-mascota-detalle {
-    width: 100%;
-    height: 280px;
-    border-radius: 8px;
-    overflow: hidden;
-    margin-bottom: 20px;
+  @media (min-width: 768px) {
+    flex-direction: row;
+  }
+}
 
-    img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+.imagen-mascota-detalle {
+  width: 100%;
+
+  @media (min-width: 768px) {
+    flex: 1;
+    max-width: 300px;
   }
 
-  .detalles-mascota {
-    .detalle-item {
-      margin-bottom: 15px;
+  img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    object-fit: cover;
+    aspect-ratio: 1;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+}
 
-      .etiqueta {
-        font-weight: bold;
-        color: #555;
-        display: block;
-        margin-bottom: 3px;
-        font-size: 0.9rem;
+.detalles-mascota {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.detalle-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    gap: 8px;
+  }
+
+  .etiqueta {
+    font-weight: 600;
+    color: #555;
+    min-width: 100px;
+  }
+
+  .valor {
+    color: #333;
+
+    &.estado-valor {
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 500;
+      display: inline-block;
+
+      &.perdida {
+        background-color: rgba($color-perdida, 0.1);
+        color: darken($color-perdida, 10%);
       }
 
-      .valor {
-        color: #333;
-        font-size: 1rem;
+      &.encontrada {
+        background-color: rgba($color-encontrada, 0.1);
+        color: darken($color-encontrada, 10%);
       }
 
-      .estado-valor {
-        font-weight: bold;
-
-        &.perdida {
-          color: $color-perdida;
-        }
-
-        &.encontrada {
-          color: $color-encontrada;
-        }
-
-        &.adopcion {
-          color: $color-adopcion;
-        }
+      &.adopcion {
+        background-color: rgba($color-adopcion, 0.1);
+        color: darken($color-adopcion, 10%);
       }
+    }
+  }
+}
+
+.seccion-contacto {
+  padding: 0 20px;
+  margin-bottom: 20px;
+
+  h3 {
+    color: $color-terracotta-dark;
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #eee;
+  }
+
+  .detalle-contacto {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+
+    .etiqueta {
+      font-weight: 600;
+      color: #555;
+      min-width: 100px;
+    }
+
+    .valor {
+      color: #333;
     }
   }
 }
 
 .modal-pie {
   padding: 15px 20px;
-  border-top: 1px solid #eee;
   display: flex;
-  justify-content: flex-end;
   gap: 10px;
+  justify-content: flex-end;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  background-color: #f9f9f9;
 
   button {
     padding: 8px 15px;
-    border-radius: 5px;
-    border: none;
-    cursor: pointer;
+    border-radius: 6px;
     font-weight: 500;
+    cursor: pointer;
+    border: none;
     transition: all 0.2s ease;
 
     &.boton-contactar {
@@ -170,11 +233,11 @@ $color-adopcion: #3498db;
     }
 
     &.boton-compartir {
-      background-color: #5585d8;
+      background-color: #5d87ff;
       color: white;
 
       &:hover {
-        background-color: darken(#5585d8, 10%);
+        background-color: darken(#5d87ff, 10%);
       }
     }
 
@@ -193,38 +256,22 @@ $color-adopcion: #3498db;
   }
 }
 
-// Animaciones
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes slideIn {
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-// Prevenir scroll cuando el modal está abierto
-:host {
-  display: contents;
-}
-
+// Prevenir scroll del body cuando el modal está abierto
 :host-context(body.modal-abierto) {
   overflow: hidden;
 }
 
-// Responsive
+// Responsive ajustes
 @media (max-width: 600px) {
-  .modal-contenido {
-    width: 95%;
-    max-height: 90vh;
-  }
-
   .modal-pie {
-    flex-direction: column;
+    flex-wrap: wrap;
 
     button {
-      width: 100%;
+      flex: 1;
+      min-width: 120px;
+      text-align: center;
+      padding: 10px;
+      margin-bottom: 8px;
     }
   }
 }

@@ -1,4 +1,4 @@
-// Variables (las mismas que en el componente de login)
+// Variables
 $color-terracotta: #c75a36;
 $color-terracotta-light: #d98166;
 $color-terracotta-dark: #a04527;
@@ -37,12 +37,6 @@ $color-adopcion: #3498db;
     align-items: center;
   }
 
-  .nav-centro {
-    flex-grow: 1;
-    max-width: 500px;
-    margin: 0 20px;
-  }
-
   button {
     background: none;
     border: none;
@@ -67,78 +61,68 @@ $color-adopcion: #3498db;
       margin-right: 4px;
     }
   }
+}
 
-    .contenedor-busqueda {
+// Contenedor de búsqueda avanzada
+.contenedor-busqueda {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  background: #fff;
+  padding: 1.2rem 2rem;
+  border-radius: 1.2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  margin: 1.5rem auto;
+  max-width: 95%;
+  flex-wrap: wrap;
+  justify-content: center;
+
+  input[type="text"] {
+    padding: 0.7rem 1.2rem;
+    border: 1px solid #ddd;
+    border-radius: 0.7rem;
+    font-size: 1rem;
+    outline: none;
+    transition: border 0.2s;
+    min-width: 140px;
+    flex: 1;
+    max-width: 180px;
+
+    &:focus {
+      border: 1.5px solid #007bff;
+      background: #f8faff;
+    }
+  }
+
+  .boton-buscar {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 0.7rem;
+    padding: 0.7rem 1.3rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
     display: flex;
     align-items: center;
-    gap: 0.8rem;
-    background: #fff;
-    padding: 1.2rem 2rem;
-    border-radius: 1.2rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-    margin: 1.5rem 0 2rem 0;
+    gap: 0.5rem;
 
-    input[type="text"] {
-      padding: 0.7rem 1.2rem;
-      border: 1px solid #ddd;
-      border-radius: 0.7rem;
-      font-size: 1rem;
-      outline: none;
-      transition: border 0.2s;
-      min-width: 140px;
-
-      &:focus {
-        border: 1.5px solid #007bff;
-        background: #f8faff;
-      }
-    }
-
-    .boton-buscar {
-      background: #007bff;
-      color: #fff;
-      border: none;
-      border-radius: 0.7rem;
-      padding: 0.7rem 1.3rem;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: background 0.2s;
-
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-
-      &:hover {
-        background: #0056b3;
-      }
-
-      &.limpiar {
-        background: #f5f5f5;
-        color: #333;
-        border: 1px solid #ddd;
-
-        &:hover {
-          background: #e0e0e0;
-        }
-      }
+    &:hover {
+      background: #0056b3;
     }
   }
 
-    .boton-notificaciones, .boton-perfil {
-      font-size: 1.2rem;
-      margin-left: 10px;
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
+  button.boton-buscar:last-child {
+    background: #f5f5f5;
+    color: #333;
+    border: 1px solid #ddd;
 
-      i {
-        margin-right: 0;
-      }
+    &:hover {
+      background: #e0e0e0;
     }
   }
-// Barra lateral izquierda
+}
+
 // Diseño del contenido principal
 .contenido-principal {
   display: flex;
@@ -268,19 +252,11 @@ $color-adopcion: #3498db;
     }
 
     .imagen-mascota {
+      width: 100%;
       height: 180px;
-      overflow: hidden;
-
-      img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform 0.5s ease;
-
-        &:hover {
-          transform: scale(1.05);
-        }
-      }
+      object-fit: cover;
+      border-radius: 10px 10px 0 0;
+      display: block;
     }
 
     .info-mascota {
@@ -333,14 +309,7 @@ $color-adopcion: #3498db;
     }
   }
 }
-// Ajuste para la imagen de tarjeta
-.imagen-mascota {
-  width: 100%;
-  height: 180px; // o el alto que quieras para la tarjeta
-  object-fit: cover; // Esto recorta y ajusta la imagen para llenar el espacio
-  border-radius: 10px 10px 0 0; // Opcional: esquinas redondeadas arriba
-  display: block;
-}
+
 // Lista de actividades en la barra lateral derecha
 .lista-actividades {
   display: flex;
@@ -404,9 +373,18 @@ $color-adopcion: #3498db;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   }
 
-  .barra-superior {
-    .nav-centro {
+  .contenedor-busqueda {
+    flex-direction: column;
+    padding: 1rem;
+
+    input[type="text"] {
+      width: 100%;
       max-width: none;
+    }
+
+    .boton-buscar {
+      width: 100%;
+      justify-content: center;
     }
   }
 }
@@ -414,10 +392,6 @@ $color-adopcion: #3498db;
 @media (max-width: 500px) {
   .barra-superior {
     padding: 0 10px;
-
-    .nav-centro {
-      margin: 0 10px;
-    }
 
     button {
       padding: 8px;
