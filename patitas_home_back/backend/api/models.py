@@ -138,7 +138,14 @@ class MascotaEncontrada(models.Model):
 class Adopcion(models.Model):
     id_adopcion = models.AutoField(primary_key=True)
     usuario = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='adopciones')
-    mascota_encontrada = models.ForeignKey(MascotaEncontrada, on_delete=models.CASCADE, related_name='adopciones')
+    mascota_adopcion = models.ForeignKey('MascotaAdopcion', on_delete=models.CASCADE, related_name='adopciones', null=True, blank=True)
+    mascota_encontrada = models.ForeignKey('MascotaEncontrada', on_delete=models.CASCADE, related_name='adopciones', null=True, blank=True)
+
+    def clean(self):
+        if not self.mascota_adopcion and not self.mascota_encontrada:
+            raise ValidationError("Debes asociar una mascota en adopción o una mascota encontrada.")
+        if self.mascota_adopcion and self.mascota_encontrada:
+            raise ValidationError("Solo puedes asociar una mascota en adopción o una mascota encontrada, no ambas.")
 
     def __str__(self):
         return f"Adopción {self.id_adopcion} - Usuario {self.usuario.id}"
@@ -215,3 +222,28 @@ class Reaccion(models.Model):
 
     def __str__(self):
         return f"{self.usuario} reaccionó a {self.publicacion}"
+
+#Modelo para mascota adopcion
+class MascotaAdopcion(models.Model):
+    id_mascota_adopcion = models.AutoField(primary_key=True)
+    usuario = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='mascotas_adopcion')
+    nombre = models.CharField(max_length=100)
+    especie = models.CharField(max_length=20)
+    raza = models.CharField(max_length=100, blank=True)
+    edad = models.CharField(max_length=50)
+    tamanio = models.CharField(max_length=50)
+    sexo = models.CharField(max_length=20)
+    descripcion = models.TextField()
+    ubicacion = models.CharField(max_length=255)
+    vacunado = models.BooleanField(default=False)
+    esterilizado = models.BooleanField(default=False)
+    amigableConMascotas = models.BooleanField(default=False)
+    amigableConNinos = models.BooleanField(default=False)
+    necesidadesEspeciales = models.TextField(blank=True)
+    foto = models.ImageField(upload_to='mascotas_adopcion_fotos/', blank=True, null=True)
+    contactoNombre = models.CharField(max_length=100)
+    contactoEmail = models.EmailField()
+    contactoTelefono = models.CharField(max_length=20)
+
+    def __str__(self):
+        return f"{self.nombre} ({self.especie})"

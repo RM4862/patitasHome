@@ -7,3 +7,4 @@ tzdata==2025.2
 djangorestframework
 djangorestframework-simplejwt
 Pillow
+django-cors-headers

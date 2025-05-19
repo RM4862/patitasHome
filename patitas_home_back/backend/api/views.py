@@ -1,4 +1,5 @@
 from rest_framework import status
+from rest_framework.decorators import api_view, permission_classes
 from django.db.models import Q
 from rest_framework.decorators import api_view, permission_classes, parser_classes
 from rest_framework.response import Response
@@ -11,6 +12,11 @@ from .serializers import (
     UserSerializer, LoginSerializer, ChangePasswordSerializer, MascotaSerializer,
     MascotaEncontradaSerializer, AdopcionSerializer, PublicacionSerializer, ComentarioSerializer
 )
+from rest_framework.response import Response
+from .models import MascotaAdopcion
+from .serializers import MascotaAdopcionSerializer
+from rest_framework.parsers import MultiPartParser, FormParser
+
 
 # Registro de usuario
 @api_view(['POST'])
@@ -101,13 +107,14 @@ def registrar_mascota_encontrada(request):
 # Vista para registrar adopciones
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def registrar_adopcion(request):
+@parser_classes([MultiPartParser, FormParser])
+def registrar_mascota_adopcion(request):
     data = request.data.copy()
     data['usuario'] = request.user.id
-    serializer = AdopcionSerializer(data=data)
+    serializer = MascotaAdopcionSerializer(data=data)
     if serializer.is_valid():
-        serializer.save()
-        return Response({'message': 'Adopción registrada exitosamente'}, status=status.HTTP_201_CREATED)
+        mascota_adopcion = serializer.save()
+        return Response({'id': mascota_adopcion.id_mascota_adopcion, 'message': 'Mascota en adopción registrada exitosamente'}, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
@@ -167,3 +174,21 @@ def lista_publicaciones(request):
     publicaciones = publicaciones.distinct()
     serializer = PublicacionSerializer(publicaciones, many=True)
     return Response(serializer.data)
+
+#Vista para registrar adopciones
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser])
+def registrar_mascota_adopcion(request):
+    data = request.data.copy()
+    mascota_data = {}
+    for key in data:
+        if key.startswith('mascota_adopcion.'):
+            field = key.replace('mascota_adopcion.', '')
+            mascota_data[field] = data[key]
+    # NO agregues 'usuario' al diccionario, porque es read_only en el serializer
+    serializer = MascotaAdopcionSerializer(data=mascota_data)
+    if serializer.is_valid():
+        mascota_adopcion = serializer.save(usuario=request.user)  # <-- Así se asigna el usuario
+        return Response({'id': mascota_adopcion.id_mascota_adopcion, 'message': 'Mascota en adopción registrada exitosamente'}, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

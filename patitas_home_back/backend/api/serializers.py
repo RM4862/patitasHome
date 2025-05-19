@@ -4,6 +4,8 @@ from .models import Mascota
 from .models import MascotaEncontrada
 from .models import Adopcion
 from .models import Publicacion
+from .models import Comentario
+from .models import MascotaAdopcion
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     class Meta:
@@ -43,12 +45,37 @@ class MascotaEncontradaSerializer(serializers.ModelSerializer):
         model = MascotaEncontrada
         fields = '__all__'
 
+#Serializer para la mascota encontrada
+class MascotaAdopcionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MascotaAdopcion
+        fields = '__all__'
+        read_only_fields = ['usuario']
+
 class AdopcionSerializer(serializers.ModelSerializer):
+    mascota_adopcion = MascotaAdopcionSerializer(required=False, allow_null=True)
+    mascota_encontrada = serializers.PrimaryKeyRelatedField(queryset=MascotaEncontrada.objects.all(), required=False, allow_null=True)
+
     class Meta:
         model = Adopcion
-        fields = '__all__'
+        fields = ['id_adopcion', 'usuario', 'mascota_adopcion', 'mascota_encontrada']
 
-from .models import Publicacion, Comentario
+    def validate(self, data):
+        if not data.get('mascota_adopcion') and not data.get('mascota_encontrada'):
+            raise serializers.ValidationError("Debes asociar una mascota en adopción o una mascota encontrada.")
+        if data.get('mascota_adopcion') and data.get('mascota_encontrada'):
+            raise serializers.ValidationError("Solo puedes asociar una mascota en adopción o una mascota encontrada, no ambas.")
+        return data
+
+    def create(self, validated_data):
+        mascota_adopcion_data = validated_data.pop('mascota_adopcion', None)
+        if mascota_adopcion_data:
+            mascota_adopcion = MascotaAdopcion.objects.create(**mascota_adopcion_data)
+            adopcion = Adopcion.objects.create(mascota_adopcion=mascota_adopcion, **validated_data)
+        else:
+            adopcion = Adopcion.objects.create(**validated_data)
+        return adopcion
+
 
 class ComentarioSerializer(serializers.ModelSerializer):
     class Meta:
@@ -63,3 +90,6 @@ class PublicacionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Publicacion
         fields = '__all__'
+
+
+

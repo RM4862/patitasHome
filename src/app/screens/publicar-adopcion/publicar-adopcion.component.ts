@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { MascotaService } from 'src/services/mascota.service';
 
 @Component({
   selector: 'app-publicar-adopcion',
@@ -10,11 +11,12 @@ import { Router } from '@angular/router';
 export class PublicarAdopcionComponent implements OnInit {
   adopcionForm: FormGroup;
   imagenSeleccionada: string | ArrayBuffer | null = null;
+  imagenFile: File | null = null;
   enviando: boolean = false;
   enviado: boolean = false;
   error: string | null = null;
+  token: string | null = null;
 
-  // Opciones para los selectores
   especies: string[] = ['Perro', 'Gato', 'Ave', 'Conejo', 'Hámster', 'Otro'];
   edades: string[] = ['Cachorro (0-1 año)', 'Joven (1-3 años)', 'Adulto (3-8 años)', 'Senior (8+ años)'];
   tamanios: string[] = ['Pequeño', 'Mediano', 'Grande', 'Muy grande'];
@@ -22,7 +24,8 @@ export class PublicarAdopcionComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private router: Router
+    private router: Router,
+    private mascotaService: MascotaService
   ) {
     this.adopcionForm = this.fb.group({
       nombre: ['', [Validators.required, Validators.maxLength(50)]],
@@ -42,6 +45,7 @@ export class PublicarAdopcionComponent implements OnInit {
       contactoEmail: ['', [Validators.required, Validators.email]],
       contactoTelefono: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]]
     });
+    this.token = localStorage.getItem('token'); // Se obtiene el token al crear el componente
   }
 
   ngOnInit(): void {
@@ -56,18 +60,25 @@ export class PublicarAdopcionComponent implements OnInit {
       // Validar tamaño (máximo 5MB)
       if (archivo.size > 5 * 1024 * 1024) {
         this.error = 'La imagen no debe exceder 5MB';
+        this.imagenSeleccionada = null;
+        this.imagenFile = null;
+        input.value = '';
         return;
       }
 
       // Validar tipo
       if (!archivo.type.match('image.*')) {
-        this.error = 'El archivo debe ser una imagen';
+        this.error = 'El archivo debe ser una imagen (formatos permitidos: JPG, PNG, JPEG, GIF)';
+        this.imagenSeleccionada = null;
+        this.imagenFile = null;
+        input.value = '';
         return;
       }
 
       const reader = new FileReader();
       reader.onload = () => {
         this.imagenSeleccionada = reader.result;
+        this.imagenFile = archivo;
         this.error = null;
       };
       reader.readAsDataURL(archivo);
@@ -76,12 +87,14 @@ export class PublicarAdopcionComponent implements OnInit {
 
   eliminarImagen(): void {
     this.imagenSeleccionada = null;
+    this.imagenFile = null;
+    this.error = null;
   }
 
   onSubmit(): void {
-    if (this.adopcionForm.invalid || !this.imagenSeleccionada) {
+    if (this.adopcionForm.invalid || !this.imagenFile || this.error) {
       this.adopcionForm.markAllAsTouched();
-      if (!this.imagenSeleccionada) {
+      if (!this.imagenFile) {
         this.error = 'La imagen es obligatoria';
       }
       return;
@@ -89,27 +102,40 @@ export class PublicarAdopcionComponent implements OnInit {
 
     this.enviando = true;
 
-    // Simulamos un envío al servidor
-    setTimeout(() => {
-      // Aquí normalmente enviaríamos los datos al servicio
-      console.log('Datos del formulario:', this.adopcionForm.value);
-      console.log('Imagen seleccionada:', this.imagenSeleccionada);
+    const formData = new FormData();
+    Object.entries(this.adopcionForm.value).forEach(([key, value]) => {
+      formData.append(`mascota_adopcion.${key}`, value as string);
+    });
+    if (this.imagenFile) {
+      formData.append('mascota_adopcion.foto', this.imagenFile);
+    }
 
+    // Obtener el token actualizado antes de enviar
+    this.token = localStorage.getItem('token');
+    if (this.token) {
+      this.mascotaService.registrarAdopcion(formData, this.token).subscribe(
+        response => {
+          this.enviando = false;
+          this.enviado = true;
+          setTimeout(() => {
+            this.router.navigate(['/feed']);
+          }, 2000);
+        },
+        error => {
+          this.enviando = false;
+          this.error = 'Error al registrar la adopción';
+        }
+      );
+    } else {
       this.enviando = false;
-      this.enviado = true;
-
-      // Redirigir al feed después de unos segundos
-      setTimeout(() => {
-        this.router.navigate(['/feed']);
-      }, 2000);
-    }, 1500);
+      this.error = 'Debes iniciar sesión para publicar una adopción.';
+    }
   }
 
   cancelar(): void {
     this.router.navigate(['/feed']);
   }
 
-  // Métodos auxiliares para validación de formularios
   campoNoValido(campo: string): boolean {
     return this.adopcionForm.get(campo)?.invalid && this.adopcionForm.get(campo)?.touched || false;
   }
